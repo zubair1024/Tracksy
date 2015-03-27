@@ -1,0 +1,138 @@
+// Adjust colors for DEWA
+
+/**
+ * @var {color} $base-color
+ * The primary color variable from which most elements derive their color scheme.
+ */
+$base-color: #428324;
+//$base-color: #157EFB;
+// Bordeaux-edition.
+//$base-color: #ff1d54;
+
+/**
+ * @var {color} $page-bg-color
+ * Background color for fullscreen components.
+ */
+$page-bg-color: #d6d7cc;
+
+// or 'glossy'
+$base-gradient: 'matte';
+
+// The following two lines import the default Sencha Touch theme. If you are building
+// a new theme, remove them and the add your own CSS on top of the base CSS (which
+// is already included in your app.json file).
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
+
+// use modern theme here.
+//@import 'sencha-touch/cupertino';
+//@import 'sencha-touch/cupertino/all';
+
+// Custom code goes here..
+
+// Add the "logout", "map" and other icons.
+// see: http://pictos.cc/font/
+@include icon('logout', 'Q');
+@include icon('map', 'G');
+@include icon('alarm', ':');
+@include icon('stats', 'Y');
+
+/* format plain Ext.field.Field html content with proper padding */
+.label-field .x-innerhtml {
+  padding: .6em;
+}
+
+/* borrowed from app.css */
+.iconlist {
+  display:             inline-block;
+  background-repeat:   no-repeat;
+  background-position: 0 4px;
+  padding-left:        40px;
+  min-height:          32px;
+}
+
+// The description text - mostly, this is the "last reported at" line.
+.iconlist > span {
+  font-weight: normal;
+  color:       #666;
+}
+
+// The image in the details:
+.img-thumbnail {
+  display:            inline-block;
+  width:              250px;
+  max-width:          100%;
+  height:             auto;
+  padding:            4px;
+  line-height:        1.42857143;
+  background-color:   #fff;
+  border:             1px solid #ddd;
+  border-radius:      4px;
+  -webkit-transition: all .2s ease-in-out;
+  -o-transition:      all .2s ease-in-out;
+  transition:         all .2s ease-in-out;
+}
+
+// Adjust position of the group icon.
+.ao-group {
+  background-position: 0 0;
+}
+
+.gm-style .gm-style-iw {
+  font-size:   13px;
+  font-weight: 300;
+}
+
+.gm-style h1 {
+  font-size: 150%;
+}
+//Changing the style of the disclosure
+.x-list .x-list-disclosure, .x-list .x-list-disclosure:before {
+  content: '4';
+  color:#737373;
+  background-image:none;
+  background: transparent;
+}
+
+.ao-bar{
+  background-image: url('../../../images/icons/16px/Multimedia-15.png');
+}
+.ao-line{
+  background-image: url('../../../images/icons/16px/Multimedia-16.png');
+}
+.ao-pie{
+  background-image: url('../../../images/icons/16px/Programing-66.png');
+}
+
+//For IOS Theme
+//.x-tab .x-button-icon:before{
+//  //font-weight: bolder;
+//  color: rgba(21, 126, 251, 0.57);
+//}
+//
+//.x-list .x-list-disclosure, .x-list .x-list-disclosure:before {
+//  font-family: 'Pictos';
+//}
+//
+//.x-button.x-button-action{
+//  background-color: #157EFB;
+//  color: #fff;
+//}
+//.x-button-icon{
+//  color: #157EFB;
+//}
+//
+//.x-button-confirm{
+//  background-color: #53d769;
+//}
+//
+//.x-button-confirm>.x-button-label{
+//  color: #FFFFFF;
+//}
+//
+//.x-form-fieldset .x-field {
+//  background-color: rgba(228, 228, 228, 0.27);
+//}
+//.x-field-input {
+//  border-radius: 0px;
+//}
