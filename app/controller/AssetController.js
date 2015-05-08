@@ -1,4 +1,5 @@
-Ext.define('Rms.controller.AssetController', {
+Ext.define(
+    'Rms.controller.AssetController', {
     extend: 'Ext.app.Controller',
     requires: [
         'Rms.view.asset.AssetView',
@@ -37,7 +38,9 @@ Ext.define('Rms.controller.AssetController', {
             nearestAssetBtn: 'assetview asset_list toolbar button[id=nearest_Asset]',
             nearestAssetBckBtn: 'assetview asset_nearest_list toolbar button[id=nearest_AssetBckBtn]',
             nearestAssetDtlBckBtn: 'assetview asset_details toolbar #near',
+            nearestAssetDtlAssetBckBtn: 'assetview asset_details toolbar #assetNear',
             groupOnMapBtn: 'assetview assets_in_group toolbar button[id=groupOnMap]',
+            assetDtlBackBtnFromMap: 'assetview asset_details toolbar #map',
             //Statistics
             statisticsView: 'statistics_view',
             statisticsList: 'statistics_view statistics_list list',
@@ -57,7 +60,7 @@ Ext.define('Rms.controller.AssetController', {
                     }
                     else if (record.raw.supportedViewTypes[0] == 'pie') {
                         this.getStatisticsView().setActiveItem(3);
-                        this.getStatisticsPieView().updateData(record);
+                        this.getStatisticsPieView().updateData(record,App.config.rootDomainObjectId);
                     }
                     else if (record.raw.supportedViewTypes[0] == 'line') {
                         this.getStatisticsView().setActiveItem(2);
@@ -82,6 +85,12 @@ Ext.define('Rms.controller.AssetController', {
                 tap: function () {
                     this.getLaunchApp().setActiveItem(0);
                     this.getStatisticsView().setActiveItem(0);
+                }
+            },
+            nearestAssetDtlAssetBckBtn:{
+                tap: function () {
+                    this.getAssetView().setActiveItem(9);
+                    this.getNearestAsset().updateData(this.nearestAssetToAsset);
                 }
             },
             //temp stop
@@ -132,7 +141,15 @@ Ext.define('Rms.controller.AssetController', {
                             mee.getAssetView().setActiveItem(1);
                             mee.getAssetDetailsToolbar().setTitle(Ext.util.Format.ellipsis(mee.domainObjectName, 10));
                             mee.getAssetDtlBackBtn().setHidden(true);
-                            mee.getNearestAssetDtlBckBtn().setHidden(false);
+                            if(!mee.nearestAssetToAsset){
+                                mee.getNearestAssetDtlBckBtn().setHidden(false);
+                                mee.getNearestAssetDtlAssetBckBtn().setHidden(true);
+                            }else{
+                                mee.getNearestAssetDtlBckBtn().setHidden(true);
+                                mee.getNearestAssetDtlAssetBckBtn().setHidden(false);
+                            }
+                            mee.getAssetDtlBackBtnFromMap().setHidden(true);
+                            //mee.getNearestAssetDtlBckBtn().setHidden(false);
                             // mee.getLaunchApp().setActiveItem(0);
                         }
                     });
@@ -143,11 +160,15 @@ Ext.define('Rms.controller.AssetController', {
                     this.getAssetView().setActiveItem(0);
                     this.getAssetDtlBackBtn().setHidden(false);
                     this.getNearestAssetDtlBckBtn().setHidden(true);
+                    //testing
+                    this.getNearestAssetDtlAssetBckBtn().setHidden(true);
                 }
             },
             nearestAssetBtn: {
                 tap: function () {
                     this.getAssetView().setActiveItem(9);
+                    this.getNearestAssetDtlBckBtn().setHidden(false);
+                    this.getNearestAssetDtlAssetBckBtn().setHidden(true);
                     this.getNearestAsset().updateData();
                 }
             },
@@ -186,8 +207,17 @@ Ext.define('Rms.controller.AssetController', {
             }
         }
     },
+    showNearestAsset: function(data){
+        this.nearestAssetToAsset = false;
+        if (this.getAssetDetails().assetOptions) {
+            this.nearestAssetToAsset = data;
+            this.getAssetDetails().assetOptions.hide();
+            this.getNearestAssetDtlAssetBckBtn().setHidden(false);
+        }
+        this.getAssetView().setActiveItem(9);
+        this.getNearestAsset().updateData(data);
+    },
     showDriverStatisticsList: function () {
-        console.log('this bugger was called');
     },
     showLineGraph: function (reportType) {
         this.getAssetDetails().assetOptions.hide();
@@ -277,7 +307,7 @@ Ext.define('Rms.controller.AssetController', {
                     }
                 }
             } else {
-                Ext.Msg.alert("Error", "The Asset has no Driver Number Specified");
+                Ext.Msg.alert("Error", "The asset has no driver number specified");
             }
         }
         Ext.Viewport.setMasked(false);

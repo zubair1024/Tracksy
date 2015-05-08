@@ -4,8 +4,7 @@
  * @var {color} $base-color
  * The primary color variable from which most elements derive their color scheme.
  */
-$base-color: #428324;
-//$base-color: #157EFB;
+$base-color: #4d992b;
 // Bordeaux-edition.
 //$base-color: #ff1d54;
 
@@ -103,7 +102,9 @@ $base-gradient: 'matte';
 .ao-pie{
   background-image: url('../../../images/icons/16px/Programing-66.png');
 }
-
+.iconlist>span{
+  color:#000000;
+}
 //For IOS Theme
 //.x-tab .x-button-icon:before{
 //  //font-weight: bolder;

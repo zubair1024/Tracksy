@@ -9,7 +9,8 @@ Ext.define('Rms.model.ActiveAlarmsModel', {
             'name',
             'assetID',
             'oid',
-            'position'
+            'position',
+            'heading'
         ]
     }
 });

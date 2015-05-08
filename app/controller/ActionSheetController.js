@@ -91,6 +91,8 @@ Ext.define('Rms.controller.ActionSheetController', {
             case 'powerOutputChart':
                 Rms.app.getController('AssetController').showLineGraph('powerOutputChart');
                 break;
+            case 'nearestAssets':
+                Rms.app.getController('AssetController').showNearestAsset(button.get('data'));
             case 'map':
                 // Do nothing. this is handled in the MapController.
                 break;
@@ -130,7 +132,7 @@ Ext.define('Rms.controller.ActionSheetController', {
         activeAlarms.load({
             params: {
                 'oid': [this.getAssetDetails().domainObjectId],
-                'view': 'asset,lastUpdatedTime,description,name,oid,assetID,position'
+                'view': 'asset,lastUpdatedTime,description,name,oid,assetID,position,heading,domainObjectType'
             }
         });
     },

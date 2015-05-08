@@ -73,7 +73,7 @@ Ext.define('Rms.controller.AlarmController', {
         activeAlarmsStore.load({
             params: {
                 alarmType: this.alarmType,
-                view: 'asset,lastUpdatedTime,description,name,oid,assetID,position'
+                view: 'asset,lastUpdatedTime,description,name,oid,assetID,position,heading,domainObjectType'
             }
         });
         this.getAlarmGroupListTap().deselectAll();

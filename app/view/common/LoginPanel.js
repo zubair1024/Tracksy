@@ -13,7 +13,7 @@ Ext.define('Rms.view.common.LoginPanel', {
         items     : [
             {
                 xtype : 'image',
-                src   : '../images/logos/login-a.png',
+                src   : '../images/logos/login-default.png',
                 height: 94,
                 width : '100%'
             }, {

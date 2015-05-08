@@ -34,6 +34,12 @@ Ext.define('Rms.view.asset.AssetDetails', {
                     hidden: true
                 },
                 {
+                    text: 'Near',
+                    ui: 'back',
+                    itemId: 'assetNear',
+                    hidden: true
+                },
+                {
                     xtype: 'spacer'
                 },
                 {
@@ -92,9 +98,11 @@ Ext.define('Rms.view.asset.AssetDetails', {
                     view: 'longitude,latitude'
                 },
                 success: function (response) {
-                    var coords = Ext.decode(response.responseText);
-                    if (coords.data[0] != undefined) {
-                        positions = coords.data[0].latitude.toFixed(6) + '°, ' + coords.data[0].longitude.toFixed(6) + '°';
+                    var cordinates = Ext.decode(response.responseText);
+                    if (cordinates.data[0] != undefined) {
+                        lati = cordinates.data[0].latitude;
+                        longi = cordinates.data[0].longitude;
+                        positions = cordinates.data[0].latitude.toFixed(6) + '°, ' + cordinates.data[0].longitude.toFixed(6) + '°';
                     } else {
 
                         positions = '';
@@ -109,7 +117,7 @@ Ext.define('Rms.view.asset.AssetDetails', {
                 currentValues: {
                     0: positions
                 },
-                objectParameterValueType: "string"
+                type: "string"
             };
         }
         /**
@@ -271,7 +279,7 @@ Ext.define('Rms.view.asset.AssetDetails', {
                     }
                     //Format value.
                     //console.log(field);
-                    switch (field.objectParameterValueType.id) {
+                    switch (field.type) {
                         case 'domainObjectReferenceType':
                             if (typeof field.displayValue !== 'undefined') {
                                 // only render the name of the reference type for now, since we do not have a mechanism to switch from here to there.
@@ -319,6 +327,7 @@ Ext.define('Rms.view.asset.AssetDetails', {
                                 pos.className = 'x-button x-button-action';
                                 pos.style.height = '3em';
                                 pos.innerText = field.displayValue;
+                                positions = field.displayValue;
                                 pos.onclick = function () {
                                     Rms.app.getController('MapController').showSingleAssetOnMap();
                                 };
@@ -398,6 +407,10 @@ Ext.define('Rms.view.asset.AssetDetails', {
     },
     addAssetOptions: function () {
         var items = [];
+        if(positions){
+        items.push({
+            text: 'Nearest Assets', itemId: 'nearestAssets', data:[positions,this.domainObjectId]});
+        }
         if (this.domainObjectType == 'pump' || this.domainObjectType == 'generator') {
             items.push({
                 text: 'Engine Coolant Temperature',

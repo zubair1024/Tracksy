@@ -24,13 +24,64 @@ Ext.define('Rms.view.asset.AssetNearest', {
                     xtype: 'spacer'
                 },
                 {
+                    //Segmented Button for Sorting
+                    xtype: 'segmentedbutton',
+                    pack: 'center',
+                    id:'nearestGrouper',
+                    allowMultiple: false,
+                    margin: '0 10 0 10',
+                    items: [
+                        {
+                            text: 'None',
+                            pressed: true,
+                            handler: function () {
+                                var list = Ext.getCmp('nearestAssetList');
+                                list.getStore().setGrouper({
+                                    groupFn: function () {
+                                        return '';
+                                    }
+                                });
+                                list.setGrouped(false);
+                               // list.setIndexBar(false);
+                                list.refresh();
+                            }
+                        },
+                        {
+                            text: 'Group',
+                            handler: function () {
+                                var list = Ext.getCmp('nearestAssetList');
+                                var store = Ext.getStore('assetPositionsStore');
+                                //Resetting the grouper
+                                list.getStore().setGrouper({
+                                    groupFn: function () {
+                                        return '';
+                                    }
+                                });
+                                list.setGrouped(false);
+                                //Setting the grouper
+                                store.setGrouper({
+                                    groupFn: function (record) {
+                                        return record.raw.assetGroupName.toUpperCase();
+                                    }
+                                });
+                                list.setGrouped(true);
+                                // list.setIndexBar(true);
+                                //list.setIndexBar( {
+                                //            letters: ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'].sort()
+                                //        });
+
+                            }
+                        }
+                    ]
+                },
+                {
                     xtype: 'segmentedbutton',
                     pack: 'center',
                     allowMultiple: false,
-                    id:'distance',
+                    id: 'distance',
                     items: [
                         {
-                            text: 'Distance &#x25B2;',
+                            text: '&#x25B2;',
                             pressed: true,
                             handler: function () {
                                 var sorters3 = [{
@@ -50,7 +101,7 @@ Ext.define('Rms.view.asset.AssetNearest', {
                             }
                         },
                         {
-                            text: 'Distance &#x25BC;',
+                            text: '&#x25BC;',
                             handler: function () {
                                 var sorters4 = [{
                                     property: 'distance',
@@ -74,7 +125,8 @@ Ext.define('Rms.view.asset.AssetNearest', {
             ]
         }
     },
-    updateData: function () {
+    updateData: function (data) {
+        (Ext.getCmp('nearestGrouper')).setPressedButtons([0]);
         Ext.Viewport.setMasked({
             xtype: 'loadmask',
             message: 'Calculating the distance...'
@@ -86,12 +138,12 @@ Ext.define('Rms.view.asset.AssetNearest', {
             totalToolbar.destroy();
         }
         var me = this;
-        if (App.currentPosition) {
+        if (data || App.currentPosition) {
             var assetPositionsStore = Ext.getStore('assetPositionsStore');
             assetPositionsStore.on('load', function (store) {
                 store.each(function (item) {
-                    var myLatitude = App.currentPosition.latitude;
-                    var myLongitude = App.currentPosition.longitude;
+                    var myLatitude = data ? parseFloat((data[0].split(','))[0]) : App.currentPosition.latitude;
+                    var myLongitude = data ? parseFloat((data[0].split(','))[1]) : App.currentPosition.longitude;
                     var assetLatitude = item.get('latitude');
                     var assetLongitude = item.get('longitude');
                     //Using HARVESIAN formula to calculate the distance
@@ -130,14 +182,15 @@ Ext.define('Rms.view.asset.AssetNearest', {
             assetPositionsStore.load({
                 params: {
                     ids: 'all',
-                    historySpec: 'CURRENT',
-                    view: 'assetID,longitude,latitude,eventTime,assetName'
+                    historySpec: 'ALL',
+                    view: 'assetID,longitude,latitude,eventTime,assetName,assetGroupName'
                 }
             });
             me.setItems(
                 [{
                     xtype: 'list',
                     store: 'assetPositionsStore',
+                    id: 'nearestAssetList',
                     emptyText: 'No Assets...',
                     infinite: true,
                     onItemDisclosure: true,
@@ -177,8 +230,14 @@ Ext.define('Rms.view.asset.AssetNearest', {
                     id: 'nearAssetsTotal',
                     docked: 'bottom'
                 }]);
+            //assetPositionsStore.setGrouper({
+            //    groupFn: function (record) {
+            //        return record.raw.assetGroupName.toUpperCase();
+            //    }
+            //});
             Ext.Viewport.setMasked(false);
-        } else {
+        }
+        else {
             if (navigator.geolocation) {
                 var geo = Ext.create('Ext.util.Geolocation', {
                     autoUpdate: false,
@@ -232,7 +291,7 @@ Ext.define('Rms.view.asset.AssetNearest', {
                                 params: {
                                     ids: 'all',
                                     historySpec: 'CURRENT',
-                                    view: 'assetID,longitude,latitude,eventTime,assetName'
+                                    view: 'assetID,longitude,latitude,eventTime,assetName,assetGroupName'
                                 }
                             });
                             me.setItems(
@@ -240,6 +299,7 @@ Ext.define('Rms.view.asset.AssetNearest', {
                                     xtype: 'list',
                                     store: 'assetPositionsStore',
                                     emptyText: 'No Assets...',
+                                    id: 'nearestAssetList',
                                     infinite: true,
                                     onItemDisclosure: true,
                                     variableHeights: true,
@@ -298,5 +358,26 @@ Ext.define('Rms.view.asset.AssetNearest', {
             }
 
         }
+        var nearestAssetList = Ext.getCmp('nearestAssetList');
+        nearestAssetList.getStore().setGrouper({
+            groupFn: function () {
+                return '';
+            }
+        });
+        nearestAssetList.setGrouped(false);
+        var sorters3 = [{
+            property: 'distance',
+            direction: 'DESC',
+            sorterFn: function (o1, o2) {
+                var v1 = Number(o1.data.distance);
+                var v2 = Number(o2.data.distance);
+                return v1 > v2 ? -1 : (v1 < v2 ? 1 : 0);
+            }
+        }];
+        var assetPositionsStore = Ext.getStore('assetPositionsStore');
+        //Reset
+        assetPositionsStore.setSorters([]);
+        //Add
+        assetPositionsStore.sort(sorters3);
     }
 });

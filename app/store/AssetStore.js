@@ -7,24 +7,24 @@ Ext.define('Rms.store.AssetStore', {
         pageSize       : 5000,
         buffered       : true,
         clearOnPageLoad: false,
-        remoteSort : false,
+        remoteSort     : false,
         params         : {
             domainDataView: 'allAssets',
             //sortValue     : 'lastReportTime',
             //sortOrder     : 1,
             filters       : JSON.stringify([])
         },
-        grouper: {
+        grouper        : {
             groupFn: function (item) {
                 return;
             } // groupFn
         }, // grouper
-        sorters: [{
-        }],
+        sorters        : [{}],
         proxy          : {
             type       : 'ajax',
             crossDomain: true,
             url        : App.config.serviceUrl + 'caesarObject/objectDataProvider3',
+            timeout: 500000,
             reader     : {
                 type         : 'json',
                 rootProperty : 'ui.items',
@@ -37,8 +37,8 @@ Ext.define('Rms.store.AssetStore', {
                     'assetStatus',
                     'location',
                     'internalNumber',
-                     'group',
-                     'driver',
+                    'group',
+                    'driver',
                     'alarmStatusForAsset',
                     'lastReportType',
                     'configuration',
@@ -47,7 +47,7 @@ Ext.define('Rms.store.AssetStore', {
             },
             limitParam : 'take',
             pageParam  : 'page',
-            startParam : 'skip',
+            startParam : 'skip'
 
         }
     }

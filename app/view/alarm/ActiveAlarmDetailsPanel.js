@@ -32,7 +32,6 @@ Ext.define('Rms.view.alarm.ActiveAlarmDetailsPanel', {
             labelWrap: true,
             cls      : 'label-field'
         };
-
         this.getAt(0).setTitle(Ext.util.Format.ellipsis(record.get('name'), 10));
         var lastUpdatedTime;
         if (record.get('lastUpdatedTime')) {
@@ -68,12 +67,13 @@ Ext.define('Rms.view.alarm.ActiveAlarmDetailsPanel', {
         //    cls: 'label-field'
         //};
         //Displaying Alarmed Asset On Map
-        //var container = document.createElement('span');
-        //container.className = 'x-button x-button-action';
-        //container.innerText = record.get('position');
-        //container.onclick = function () {
-        //    Rms.app.getController('MapController').showSingleAlarmAssetOnMap(record,lastUpdatedTime);
-        //};
+        var container = document.createElement('span');
+        container.className = 'x-button x-button-action';
+        container.style.height = '3em';
+        container.innerText = record.get('position');
+        container.onclick = function () {
+            Rms.app.getController('MapController').showSingleAlarmAssetOnMap(record,lastUpdatedTime,record.raw.domainObjectType);
+        };
         this.setItems({
             xtype   : 'fieldset',
             title   : 'Alarm Details',
@@ -91,7 +91,7 @@ Ext.define('Rms.view.alarm.ActiveAlarmDetailsPanel', {
                 }, {
 
                     label: 'Position',
-                    html : record.get('position')
+                    html : container
                 }, {
                     label: 'Last Update Time',
                     html : lastUpdatedTime

@@ -54,11 +54,11 @@ Ext.define('Rms.view.LaunchApp', {
                     xtype: 'statistics_view',
                     iconCls: 'stats'
                 },
-                {
-                    title:'Profile',
-                    xtype: 'user_profile',
-                    iconCls: 'settings'
-                },
+                //{
+                //    title:'Profile',
+                //    xtype: 'user_profile',
+                //    iconCls: 'settings'
+                //},
                 {
                     title  : 'Logout',
                     iconCls: 'logout',

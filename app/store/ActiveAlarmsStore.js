@@ -7,7 +7,7 @@ Ext.define('Rms.store.ActiveAlarmsStore', {
         autoLoad: false,
         pageSize: 800,
         params  : {
-            view: 'asset,lastUpdatedTime,description,name,oid,assetID,position'
+            view: 'asset,lastUpdatedTime,description,name,oid,assetID,position,heading,domainObjectType'
         },
         proxy   : {
             type  : 'ajax',

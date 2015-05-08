@@ -12,22 +12,19 @@ Ext.define('Rms.view.map.AssetMapPanel', {
                 title : 'All Assets',
                 cls   : 'toolbar-title-font',
                 docked: 'top',
-                items : [
-                    {
+                items : [{
                         text  : 'Back',
                         ui    : 'back',
                         itemId: 'back',
                         hidden: 'true'
-                    },
-                    {
+                    }, {
                         xtype:'button',
                         text:'Group',
                         itemId:'backToGroup',
                         ui:'back',
                         hidden:true
                     }
-                    ,
-                    {
+                    , {
                         xtype: 'button',
                         text : '< 1 KM'
                         //hidden: true

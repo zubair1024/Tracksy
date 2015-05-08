@@ -62,12 +62,13 @@ Ext.define('Rms.view.alarm.AllAlarmDetailsPanel', {
         };
 
         this.getAt(0).setTitle(Ext.util.Format.ellipsis(record.get('name'), 10));
-
-        var position = App.config.blankSign;
-        if (typeof record.get('position') != 'undefined') {
-            position = record.get('position');
-        }
-        console.log(position);
+        var container = document.createElement('span');
+        container.className = 'x-button x-button-action';
+        container.style.height = '3em';
+        container.innerText = record.get('position');
+        container.onclick = function () {
+            Rms.app.getController('MapController').showSingleAlarmAssetOnMap(record,lastUpdatedTime,record.raw.domainObjectType);
+        };
         this.setItems({
             xtype: 'fieldset',
             title: 'Alarm Details',
@@ -82,7 +83,7 @@ Ext.define('Rms.view.alarm.AllAlarmDetailsPanel', {
                 }, {
 
                     label: 'Position',
-                    html: position
+                    html: container
                 }, {
                     label: 'Last Update Time',
                     html: lastUpdatedTime

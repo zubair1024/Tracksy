@@ -31,7 +31,9 @@ Ext.define('Rms.controller.MapController', {
             mapControlLocationListBckBtn: 'locations_list toolbar button[text=Back]',
             mapControlocationList: 'mapview locations_list list',
             mapControlGeofenceList: 'mapview geofence_list_map list',
+            nearestAsset: 'assetview asset_nearest_list',
             nearestAssetDtlBckBtn: 'assetview asset_details toolbar #near',
+            nearestAssetDtlAssetBckBtn: 'assetview asset_details toolbar #assetNear',
             NearestAssetDistanceBtn: 'assetview asset_nearest_list toolbar segmentedbutton',
             // for showing single asset on map
             assetView: 'assetview',
@@ -127,6 +129,7 @@ Ext.define('Rms.controller.MapController', {
                     this.getAssetDtlBackBtnFromMap().setHidden(true);
                     this.getLaunchApp().setActiveItem(1);
                     this.getAssetView().setActiveItem(0);
+
                 }
             },
             mapView: {
@@ -183,8 +186,9 @@ Ext.define('Rms.controller.MapController', {
                         this.getMapView().setActiveItem(0);
                         this.getGroupMapBackBtn().setHidden(true);
                         var idx = this.getAssetView().items.indexOf(this.getAssetView().getActiveItem());
-                        if(idx==9){
-                            this.getNearestAsset().updateData();
+                        if (idx == 9) {
+                            //this.getNearestAsset().updateData();
+                            this.getAssetView().setActiveItem(0);
                         }
                     }
                 }
@@ -829,11 +833,11 @@ Ext.define('Rms.controller.MapController', {
      * @param {boolean=} singleMode
      */
     addAssetsOnMap: function (store, singleMode) {
-        if (store.getCount() == 0) {
-            Ext.Msg.alert('Alert', 'There are no assets with positional co-ordinates');
-            this.getLaunchApp().setActiveItem(0);
-            return
-        }
+        //if (store.getCount() == 0) {
+        //    Ext.Msg.alert('Alert', 'There are no assets with positional co-ordinates');
+        //    this.getLaunchApp().setActiveItem(0);
+        //    return
+        //}
         Ext.Viewport.setMasked({
             xtype: 'loadmask',
             message: 'Plotting...'
@@ -883,7 +887,6 @@ Ext.define('Rms.controller.MapController', {
                     break;
             }
             store.each(function (item) {
-
                 //Getting the status of the vehicle, pump, generator (Normal or Idle)
                 var assetStore = Ext.getStore('assetStore');
                 assetStore.each(function (record) {
@@ -965,13 +968,13 @@ Ext.define('Rms.controller.MapController', {
             }, 500);
 
         }
-        setTimeout(function () {
-           me.refresher(store,singleMode);
-        }, 120000);
+        //setTimeout(function () {
+        //    me.refresher(store, singleMode);
+        //}, 120000);
     },
-    refresher: function(store,singleMode){
-       this.removeAssetMarkersFromMap();
-        this.addAssetsOnMap(store,singleMode);
+    refresher: function (store, singleMode) {
+        this.removeAssetMarkersFromMap();
+        this.addAssetsOnMap(store, singleMode);
     },
 
     /**
@@ -1076,7 +1079,6 @@ Ext.define('Rms.controller.MapController', {
                 date.setMinutes(date.getMinutes() + App.config.user.timeZoneOffset);
                 date = Ext.Date.format(date, App.config.user.dateTimeFormat);
             }
-
             //Group, Asset Status, Driver
             Ext.Ajax.request({
                 async: false,
@@ -1095,7 +1097,6 @@ Ext.define('Rms.controller.MapController', {
                 },
                 success: function (response) {
                     var data = Ext.decode(response.responseText);
-                    //console.log(data);
                     me.grouptext = 'Group: ' + data.ui.items[0].items[0].items[0].displayValue;
                     if (data.ui.items[0].items[1].items[0].currentValues[0]) {
                         me.driverNametext = 'Driver: ' + data.ui.items[0].items[1].items[0].displayValue;
@@ -1178,6 +1179,7 @@ Ext.define('Rms.controller.MapController', {
                                 me.getAssetDtlBackBtn().setHidden(true);
                                 me.getNearestAssetDtlBckBtn().setHidden(true);
                                 me.getAssetDtlBackBtnFromMap().setHidden(false);
+                                me.getNearestAssetDtlAssetBckBtn().setHidden(true);
                                 me.getLaunchApp().setActiveItem(0);
                             }
                         });
@@ -1329,7 +1331,7 @@ Ext.define('Rms.controller.MapController', {
         var assetPositionsStore = Ext.getStore('assetPositionsStore');
         assetPositionsStore.removeAll();
         assetPositionsStore.on('load', this.addAssetsOnMap, this);
-        this.assetPositionTime = 'current';
+        this.assetPositionTime = 'all';
         assetPositionsStore.load({
             params: {
                 ids: 'all',
@@ -1413,56 +1415,90 @@ Ext.define('Rms.controller.MapController', {
         this.getGroupMapBackBtn().setHidden(false);
         this.getLaunchApp().setActiveItem(1);
     },
-    showSingleAlarmAssetOnMap: function (record, datetime) {
-        console.log('mapController.showSingleAlarmAssetOnMap');
-        this.allAssets = false;
-        this.directMapTapped = false;
-        console.log(record);
-        if (this.getAssetDetails().assetOptions) {
-            this.getAssetDetails().assetOptions.hide();
+    showSingleAlarmAssetOnMap: function (item, datetime, domainObjectType) {
+        var position = item.get('position');
+        if (position && position != '' && position != 'Not Available' && position != App.config.blankSign) {
+            console.log('mapController.showSingleAlarmAssetOnMap');
+            this.alarmedAsset = true;
+            var me = this;
+            this.allAssets = false;
+            this.directMapTapped = false;
+            if (this.getAssetDetails().assetOptions) {
+                this.getAssetDetails().assetOptions.hide();
+            }
+            // FIXME what does this do?
+            this.getMapView().getAt(0).getAt(0).getAt(0).setHidden(false);
+            this.getNearbyAssetsBtn().setHidden(true);
+            this.getMapView().getAt(0).getAt(0).setTitle('Map');
+            this.removeAssetMarkersFromMap();
+            this.singleDomainObjectId = item.get('assetID');
+            Ext.Viewport.setMasked({
+                xtype: 'loadmask',
+                message: 'Plotting...'
+            });
+            var map = me.gmap;
+            //Setting the traffic layer to the map
+            var trafficLayer = new google.maps.TrafficLayer();
+            trafficLayer.setMap(map);
+            if (map) {
+                map.setTilt(45);
+            }
+            //Adding the user to the Map
+            if (navigator.geolocation) {
+                var myLat, myLng;
+                navigator.geolocation.getCurrentPosition(success);
+                function success(position) {
+                    myLat = position.coords.latitude;
+                    myLng = position.coords.longitude;
+                    var marker = new google.maps.Marker({
+                        position: new google.maps.LatLng(myLat, myLng),
+                        clickable: false,
+                        map: map,
+                        icon: '../images/icons/16px/Business-28.png',
+                        assetName: 'me'
+                    });
+                    me.assetMarkersArray.push(marker);
+                }
+            }
+            //noinspection JSUnresolvedFunction
+            var bounds = new google.maps.LatLngBounds();
+            var icon = '../images/maps/icons/directions/arrow-maroon/';
+            if (domainObjectType == 'generator') {
+                icon = '../images/maps/icons/directions/generator-arrow-maroon/';
+            } else if (domainObjectType == 'pump') {
+                icon = '../images/maps/icons/directions/pump-arrow-red/';
+            }
+            var angle = Math.round(item.get('heading') / 15) * 15;
+            var iconPath = icon + angle + '.png';
+            var separatedPosition = (item.get('position')).split(' ');
+            var latLong = new google.maps.LatLng(separatedPosition[1], separatedPosition[3]);
+            var marker = new google.maps.Marker({
+                position: latLong,
+                clickable: true,
+                map: map,
+                icon: iconPath,
+                assetName: item.get('asset'),
+                assetID: item.get('assetID'),
+                domainObjectType: item.get('domainObjectType')
+            });
+            if (me.assetMarkersArray) {
+                me.assetMarkersArray.push(marker);
+            }
+            bounds.extend(latLong);
+            item.data.assetName = item.get('asset');
+            item.data.eventTime = item.get('lastUpdatedTime');
+            item.data.locationReference = item.get('description');
+            item.data.latitude = separatedPosition[1];
+            item.data.longitude = separatedPosition[3];
+            me.showAssetInfo(me.assetMarkersArray, marker, item);
+            this.persistantBounds = bounds;
+            Ext.Viewport.setMasked(false);
+            setTimeout(function () {
+                me.gmap.setCenter(bounds.getCenter());
+                me.gmap.setZoom(14);
+
+            }, 500);
+            this.getLaunchApp().setActiveItem(1);
         }
-        // FIXME what does this do?
-        this.getMapView().getAt(0).getAt(0).getAt(0).setHidden(false);
-        this.getNearbyAssetsBtn().setHidden(true);
-        this.getMapView().getAt(0).getAt(0).setTitle('Map');
-        this.removeAssetMarkersFromMap();
-       // this.singleDomainObjectId = this.getAssetDetails().domainObjectId;
-        this.singleDomainObjectId = record.get('assetID');
-        var assetPositionsStore = Ext.getStore('assetPositionsStore');
-        assetPositionsStore.removeAll();
-        assetPositionsStore.clearListeners();
-        assetPositionsStore.on('load', function (store) {
-            if (store.getCount() > 0) {
-                this.assetPositionTime = 'current';
-                // Second param indicates that we only add ONE asset here.
-                this.addAssetsOnMap(store, true);
-                this.getLaunchApp().setActiveItem(1);
-            } else {
-                Ext.Msg.alert('', 'No valid GPS location available');
-            }
-            store.clearListeners();
-        }, this);
-        console.log(datetime);
-        var temp = datetime.split(' ');
-        var date = temp[0];
-        var time = temp[1];
-        //assetPositionsStore.load({
-        //    params: {
-        //        oid: this.singleDomainObjectId,
-        //        historySpec: 'CURRENT',
-        //        view: 'assetID,typeShort,longitude,latitude,eventTime,heading,assetName,locationReference'
-        //    }
-        //});
-        assetPositionsStore.load({
-            params: {
-                oid: this.singleDomainObjectId,
-                historySpec: 'INTERVAL',
-                fromDate: date,
-                fromTime: time,
-                toDate: date,
-                toTime: time,
-                view: 'assetID,typeShort,longitude,latitude,eventTime,heading,assetName,locationReference'
-            }
-        });
     }
 });
