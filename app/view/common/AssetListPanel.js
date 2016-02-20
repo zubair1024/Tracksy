@@ -14,14 +14,10 @@ Ext.define('Rms.view.common.AssetListPanel', {
 
     },
     initialize: function () {
-        Ext.Viewport.setMasked({
-            xtype: 'loadmask',
-            message: 'Fetching all assets...'
-        });
         this.setItems(
             {
                 xtype: 'list',
-                id: 'lis',
+                id: 'assetList',
                 indexBar:false,
                 grouped: false,
                 store: this.config.store,
@@ -29,7 +25,7 @@ Ext.define('Rms.view.common.AssetListPanel', {
                         xclass: 'Ext.ux.touch.PullRefreshFn',
                         pullText: 'Pull down to refresh the Asset list!',
                         refreshFn: function () {
-                            var list = Ext.getCmp('lis');
+                            var list = Ext.getCmp('assetList');
                             var assetStore = Ext.getStore('assetStore');
                             list.getStore().setGrouper({
                                 groupFn: function () {
@@ -73,7 +69,7 @@ Ext.define('Rms.view.common.AssetListPanel', {
                                                 return (thisRegEx.test(record.get('name')))
                                             });
                                         }
-                                        var list = Ext.getCmp('lis');
+                                        var list = Ext.getCmp('assetList');
                                         if (list.scroller) {
                                             list.scroller.scrollTo({x:0, y:0},true);
                                         }
@@ -114,7 +110,7 @@ Ext.define('Rms.view.common.AssetListPanel', {
                                     {
                                         text: 'A-Z',
                                         handler: function () {
-                                            var list = Ext.getCmp('lis');
+                                            var list = Ext.getCmp('assetList');
                                             var store = Ext.getStore('assetStore');
                                             //Resetting the grouper
                                             list.getStore().setGrouper({
@@ -122,6 +118,7 @@ Ext.define('Rms.view.common.AssetListPanel', {
                                                     return '';
                                                 }
                                             });
+                                            //list.setIndexBar(false);
                                             list.setGrouped(false);
                                             //Setting the grouper
                                             store.setGrouper({
@@ -130,17 +127,26 @@ Ext.define('Rms.view.common.AssetListPanel', {
                                                 }
                                             });
                                             list.setGrouped(true);
-                                            list.setIndexBar(true);
-                                            //list.setIndexBar( {
-                                            //            letters: ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'].sort()
-                                            //        });
+                                            //list.setIndexBar(true);
+                                            list.setIndexBar( {
+                                                        letters: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'].sort(),
+                                                listeners: {
+                                                    index: function (html, target, eOpts) {
 
+
+
+                                                    } // tap
+
+
+                                                }
+                                                    });
+                                            list.getIndexBar().removeCls('status')
                                         }
                                     },
                                     {
                                         text: 'Status',
                                         handler: function () {
-                                            var list = Ext.getCmp('lis');
+                                            var list = Ext.getCmp('assetList');
                                             var store = Ext.getStore('assetStore');
                                             //Resetting the Grouper
                                             list.getStore().setGrouper({
@@ -156,7 +162,11 @@ Ext.define('Rms.view.common.AssetListPanel', {
                                                 }
                                             });
                                             list.setGrouped(true);
-                                            list.setIndexBar(false);
+                                            //list.setIndexBar(false);
+                                            list.setIndexBar({
+                                                        letters: ['IDLING','NORMAL','NOTMOV','NOTOP']
+                                                    });
+                                            list.getIndexBar().setCls('status');
 
                                         }
                                     },
@@ -164,7 +174,7 @@ Ext.define('Rms.view.common.AssetListPanel', {
                                         text: 'None',
                                         pressed: true,
                                         handler: function () {
-                                            var list = Ext.getCmp('lis');
+                                            var list = Ext.getCmp('assetList');
                                             var assetStore = Ext.getStore('assetStore');
                                             list.getStore().setGrouper({
                                                 groupFn: function () {
@@ -240,19 +250,12 @@ Ext.define('Rms.view.common.AssetListPanel', {
                         docked: 'bottom',
                         minHeight: '1.8em',
                         title: '<div style="font-size: 0.7em">'+(Ext.getStore('assetStore')).getCount()+' Assets</div>'
-                       // items:[
-                       //     {
-                       //         xtype: 'spacer'
-                       //     },
-                       //     {
-                       //         xtype: 'title',
-                       //         title: '<div style="font-size: 0.7em">'+(Ext.getStore('assetStore')).getCount()+' Assets</div>'
-                       //     }
-                       // ]
                     }
                 ],
                 itemTpl: Ext.create('Ext.XTemplate',
-                    '<span class="iconlist ao-{domainObjectType}"><b>{name}</b><br><span>{[this.formatDateTime(values.lastReportTime)]}<br>&nbsp;<b>{[this.engineState(values.assetStatus, values.domainObjectType)]}</b></span></span>', {
+                    '<span class="iconlist ao-{domainObjectType}"><b>{name}</b><br><span>' +
+                    '{[this.formatDateTime(values.lastReportTime)]}<br>&nbsp;<b>' +
+                    '{[this.engineState(values.assetStatus, values.domainObjectType)]}</b></span></span>', {
                         formatDateTime: function (isodate) {
                             //Fixing for iOS
                             var tempDate = isodate.replace('T', ' ');
@@ -297,6 +300,5 @@ Ext.define('Rms.view.common.AssetListPanel', {
                 return v1 > v2 ? 1 : (v1 < v2 ? -1 : 0);
             }
         }));
-        Ext.Viewport.setMasked(false);
     }
 });

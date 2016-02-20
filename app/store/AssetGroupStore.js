@@ -21,6 +21,13 @@ Ext.define('Rms.store.AssetGroupStore', {
         },
         proxy   : {
             type  : 'ajax',
+            actionMethods: {
+                create : 'POST',
+                read   : 'POST',
+                update : 'POST',
+                destroy: 'POST'
+            },
+            crossDomain: true,
             url   : App.config.serviceUrl + 'mobile/visibleAssetGroups/',
             reader: {
                 type        : 'json',

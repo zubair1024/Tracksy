@@ -13,6 +13,12 @@ Ext.define('Rms.store.AssetPositionsStore', {
         autoLoad: false,
         proxy   : {
             type  : 'ajax',
+            actionMethods: {
+                create : 'POST',
+                read   : 'POST',
+                update : 'POST',
+                destroy: 'POST'
+            },
             crossDomain: true,
             timeout: 500000,
             url   : App.config.serviceUrl + 'mobile/assetPositions/',

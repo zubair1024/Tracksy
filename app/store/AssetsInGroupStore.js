@@ -16,6 +16,13 @@ Ext.define('Rms.store.AssetsInGroupStore', {
         },
         proxy          : {
             type       : 'ajax',
+            actionMethods: {
+                create : 'POST',
+                read   : 'POST',
+                update : 'POST',
+                destroy: 'POST'
+            },
+            crossDomain: true,
             url        : App.config.serviceUrl + 'caesarObject/objectDataProvider3',
             reader     : {
                 type         : 'json',
@@ -26,15 +33,15 @@ Ext.define('Rms.store.AssetsInGroupStore', {
                 domainObjectValues: JSON.stringify([
                     'name',
                     'lastReportTime',
-                    'assetStatus',
-                    'location',
-                    'internalNumber',
-                    'group',
-                     'driver',
-                    'alarmStatusForAsset',
-                    'lastReportType',
-                    'configuration',
-                    'active'
+                    'assetStatus'
+                    //'location',
+                    //'internalNumber',
+                    //'group',
+                    //'driver',
+                    //'alarmStatusForAsset',
+                    //'lastReportType',
+                    //'configuration',
+                    //'active'
                 ])
             },
             limitParam : 'take',

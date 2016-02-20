@@ -35,6 +35,11 @@ Ext.define('Rms.view.statistics.StatisticsBar', {
     },
     updateData: function (record) {
         var me = this;
+        //loadmask
+        Ext.Viewport.setMasked({
+            xtype: 'loadmask',
+            message: 'Loading statistical data...'
+        });
         me.temp = [];
         me.tempRow = [];
         me.tempCol = [];
@@ -79,6 +84,12 @@ Ext.define('Rms.view.statistics.StatisticsBar', {
                         legend: {
                             position: 'top'
                         },
+                        listeners:{
+                            order: 'after',
+                            painted: function(){
+                                Ext.Viewport.setMasked(false);
+                            }
+                        },
                         stacked: false,
                         flipXY: false,
                         interactions: [{
@@ -89,7 +100,9 @@ Ext.define('Rms.view.statistics.StatisticsBar', {
                             listeners: {
                                 show: function(me, item, panel) {
                                     panel.getDockedItems()[0].setTitle("Info");
-                                    panel.setHtml('<h3>'+item.record.get('name')+'</h3><hr><span><b>'+item.field.toUpperCase()+'</b> : '+item.record.get(item.field)+'</span><br><span><b>'+lastUpdatedTime+'</b></span>');
+                                    panel.setHtml('<h3>'+item.record.get('name')+'</h3><hr>' +
+                                                  '<span><b>'+item.field.toUpperCase()+'</b> : '+item.record.get(item.field)+'</span>' +
+                                                  '<br><span><b>'+lastUpdatedTime+'</b></span>');
                                 }
                             }
                         }],
@@ -133,5 +146,6 @@ Ext.define('Rms.view.statistics.StatisticsBar', {
                 alert('failed');
             }
         });
+        //Ext.Viewport.setMasked(false);
     }
 });

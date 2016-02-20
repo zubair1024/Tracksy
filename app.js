@@ -20,6 +20,8 @@
 Ext.application({
     name       : 'Rms',
     requires   : [
+        'Rms.util.SizeMonitor', //TEMP fix, Chrome 43 bug
+        'Rms.util.PaintMonitor', //TEMP fix, Chrome 43 bug
         'Ext.data.Model',
         'Ext.MessageBox',
         'Ext.field.Password',
@@ -29,7 +31,7 @@ Ext.application({
         'Ext.Map',
         'Ext.Panel',
         'Rms.model.LocalStorageModel',
-        'Rms.view.common.LoginPanel', 
+        'Rms.view.common.LoginPanel',
         'Rms.view.map.NearbyAssets',
         'Rms.view.asset.AssetNearest',
         'Rms.view.statistics.StatisticsBar',
@@ -47,19 +49,26 @@ Ext.application({
         'map.MapControl',
         'map.NearbyAssets',
         'common.UserProfile',
+        'driver.DriverView',
+        'driver.DriverListPanel',
+        'driver.DriverDetails',
+        'statistics.StatisticsGauge',
         'statistics.StatisticsView',
         'statistics.StatisticsList'
     ],
     controllers: [
+        'CommonController',
         'AssetController',
         'AlarmController',
         'SessionController',
         'ActionSheetController',
-        'MapController'
+        'MapController',
+        'DriverController'
     ],
 
     stores           : [
         'AssetStore',
+        'DriverStore',
         'AssetPositionsStore',
         'ActiveAlarmsStore',
         'VisibleLocationsStore'

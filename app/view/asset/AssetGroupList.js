@@ -81,10 +81,10 @@ Ext.define('Rms.view.asset.AssetGroupList', {
     show: function() {
         this.callParent(arguments);
 
-        this.down('list').show({
-            type: 'slide',
-            direction: 'up',
-            duration: 300
-        });
+        //this.down('list').show({
+        //    type: 'slide',
+        //    direction: 'up',
+        //    duration: 300
+        //});
     }
 });

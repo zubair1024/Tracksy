@@ -13,6 +13,7 @@ Ext.define('Rms.controller.SessionController', {
             applicationId: 'loginPage selectfield',
             userName     : 'loginPage textfield[name=username]',
             password     : 'loginPage passwordfield',
+            savePassword: 'loginPage togglefield',
             logoutTab    : 'launchapp #logout',
             integrateApp : 'integrate_app',
             launchApp    : 'launchapp'
@@ -31,20 +32,21 @@ Ext.define('Rms.controller.SessionController', {
     },
     launch     : function () {
         var appSelector = this.getApplicationId();
-
+        var savePassword = this.getSavePassword();
+        var username = this.getUserName().getValue();
+        var password = this.getPassword().getValue();
+        var localStore = Ext.getStore('localStore');
         // No fixed appId has been defined before, so we need to display the appSelector SelectField and load the store for that.
         if (App.config.appId === null) {
             var appStore = Ext.create('Rms.store.ApplicationsStore');
-
             appStore.on('load', function () {
-                var localStore = Ext.getStore('localStore');
                 var record     = localStore.findRecord('key', 1);
-
                 if (localStore.getCount() > 0 && record.get('applicationId') != '') {
-                    appSelector.setValue(record.get('applicationId'));
+                    appSelector.setValue(App.config.appId || record.get('applicationId'));
+                    savePassword.setValue(true);
                 }
             }, this);
-
+            //Force Save
             appSelector.setStore(appStore);
             appStore.load();
         } else {
@@ -94,25 +96,25 @@ Ext.define('Rms.controller.SessionController', {
                 success: function (response) {
                     var data       = Ext.decode(response.responseText),
                         localStore = Ext.getStore('localStore');
-
                     //noinspection JSUnresolvedVariable
                     if (data.loggedOn) {
-
                         // Save SessionId.
                         App.config.sessionId = data[App.config.sessionName];
                         Ext.util.Cookies.set(App.config.sessionName, App.config.sessionId);
-
-                        var record = localStore.findRecord('key', 1);
-                        record.set('username', username);
-                        record.set('password', password);
-                        record.set('applicationId', applicationId);
-
+                        var record           = localStore.findRecord('key', 1);
+                        if (me.getSavePassword().getValue()) {
+                            record.set('username', username);
+                            record.set('applicationId', applicationId);
+                            record.set('password', password);
+                            record.set('savePassword', true);
+                        }else{
+                            window.localStorage.clear();
+                            record.set('savePassword', false);
+                        }
                         me.getSettings();
                     }
-
                     // Save changes to local store.
                     localStore.sync();
-
                     Ext.Viewport.unmask();
 
                 },
@@ -138,6 +140,12 @@ Ext.define('Rms.controller.SessionController', {
     },
     logout     : function (ths, newActive, oldActive, option) {
         var me = this;
+        var localStore       = Ext.getStore('localStore');
+        //Stop Map refresher if exists
+        if (Rms.app.getController('MapController').refresh) {
+            Rms.app.getController('MapController').refresh = false;
+            clearInterval(Rms.app.getController('MapController').refreshIntervalId);
+        }
         Ext.Msg.confirm(
             "Logout",
             "Are you use you want to logout?",
@@ -156,21 +164,20 @@ Ext.define('Rms.controller.SessionController', {
                             Ext.util.Cookies.clear(App.config.sessionName);
 
                             me.getLaunchApp().destroy();
-                            var localStore       = Ext.getStore('localStore');
                             var cache            = localStore.findRecord('key', 1);
                             var integrate_app    = me.getIntegrateApp();
                             var launchApp        = Ext.create('Rms.view.LaunchApp');
-
-                            // TODO what does this do?
                             integrate_app.insert(1, launchApp);
-
-
-                            if (cache.get('username') != '' && cache.get('password') != '') {
-                                var loginPanel = integrate_app.getActiveItem().getItems().getAt(1);
+                            var loginPanel = integrate_app.getActiveItem().getItems().getAt(1);
+                            if (cache.get('savePassword') && cache.get('username') != '' && cache.get('password') != '') {
                                 loginPanel.getComponent('username').setValue(cache.get('username'));
                                 loginPanel.getComponent('password').setValue(cache.get('password'));
+                            }else{
+                                loginPanel.getComponent('username').setValue('');
+                                loginPanel.getComponent('password').setValue('');
+                                window.localStorage.clear();
                             }
-
+                            localStore.sync();
                             integrate_app.setActiveItem(0);
                             Ext.Viewport.unmask();
                         }
@@ -198,7 +205,7 @@ Ext.define('Rms.controller.SessionController', {
                 /**
                  * Fetch Kendo culture and use it to localize the formatters.
                  */
-                var kendoCultureFile = '../js/lib/kendo/cultures/kendo.culture.' + App.config.user.culture + '.min.js';
+                var kendoCultureFile = 'resources/cultures/kendo.culture.' + App.config.user.culture + '.min.js';
                 Ext.Loader.injectScriptElement(kendoCultureFile, function () {
                     // Adapt the time / date formats for ExtJS.
                     if (kendo.cultures[App.config.user.culture]) {

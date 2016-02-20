@@ -1,10 +1,31 @@
-// Adjust colors for DEWA
+//FOR DEWA
+//html, body {
+//  background-color: #0e5c16;
+//}
+//$base-color: #4d992b;
+//@import 'sencha-touch/default';
+//@import 'sencha-touch/default/all';
+//
+//.x-mask .x-mask-inner {
+//  background: rgba(23, 74, 0, 0.68);
+//  box-shadow: 0 2px 10px #000;
+//  border-radius: 20px;
+//}
+//.x-mask .x-mask-message {
+//  color: #E4E4E4;
+//}
+//.x-loading-spinner > span.x-loading-top {
+//  background-color: rgba(255, 255, 255, 0.99);
+//}
 
-/**
- * @var {color} $base-color
- * The primary color variable from which most elements derive their color scheme.
- */
-$base-color: #4d992b;
+//FOR cupertino
+html, body {
+  background-color: #fff;
+}
+$base-color: #157EFB;
+@import 'sencha-touch/cupertino';
+@import 'sencha-touch/cupertino/all';
+
 // Bordeaux-edition.
 //$base-color: #ff1d54;
 
@@ -17,16 +38,6 @@ $page-bg-color: #d6d7cc;
 // or 'glossy'
 $base-gradient: 'matte';
 
-// The following two lines import the default Sencha Touch theme. If you are building
-// a new theme, remove them and the add your own CSS on top of the base CSS (which
-// is already included in your app.json file).
-@import 'sencha-touch/default';
-@import 'sencha-touch/default/all';
-
-// use modern theme here.
-//@import 'sencha-touch/cupertino';
-//@import 'sencha-touch/cupertino/all';
-
 // Custom code goes here..
 
 // Add the "logout", "map" and other icons.
@@ -35,6 +46,8 @@ $base-gradient: 'matte';
 @include icon('map', 'G');
 @include icon('alarm', ':');
 @include icon('stats', 'Y');
+
+
 
 /* format plain Ext.field.Field html content with proper padding */
 .label-field .x-innerhtml {
@@ -105,35 +118,119 @@ $base-gradient: 'matte';
 .iconlist>span{
   color:#000000;
 }
-//For IOS Theme
-//.x-tab .x-button-icon:before{
-//  //font-weight: bolder;
-//  color: rgba(21, 126, 251, 0.57);
-//}
-//
-//.x-list .x-list-disclosure, .x-list .x-list-disclosure:before {
-//  font-family: 'Pictos';
-//}
-//
-//.x-button.x-button-action{
-//  background-color: #157EFB;
-//  color: #fff;
-//}
-//.x-button-icon{
-//  color: #157EFB;
-//}
-//
-//.x-button-confirm{
-//  background-color: #53d769;
-//}
-//
-//.x-button-confirm>.x-button-label{
-//  color: #FFFFFF;
-//}
-//
-//.x-form-fieldset .x-field {
-//  background-color: rgba(228, 228, 228, 0.27);
-//}
-//.x-field-input {
-//  border-radius: 0px;
-//}
+
+.status>div {
+  position: relative;
+  font-size: .6em;
+  padding-bottom: 90px;
+  left: -2.9em;
+}
+
+//For cupertino Theme
+html, body {
+  background-color: #fff;
+}
+
+.x-tab .x-button-icon:before{
+  //font-weight: bolder;
+  color: rgba(21, 126, 251, 0.57);
+}
+
+.x-list .x-list-disclosure, .x-list .x-list-disclosure:before {
+  font-family: 'Pictos';
+}
+
+.x-button.x-button-action, .x-button.x-button-action .x-button-label{
+  background-color: #157EFB;
+  color: #fff;
+}
+.x-button-icon{
+  color: #157EFB;
+}
+
+.x-button-confirm{
+  background-color: #53d769;
+}
+
+.x-button-confirm>.x-button-label{
+  color: #FFFFFF;
+}
+
+.x-form-fieldset .x-field {
+  background-color: rgba(228, 228, 228, 0.27);
+}
+.x-field-input {
+  border-radius: 0px;
+}
+.x-toolbar.x-docked-top .x-button {
+  padding-right: 10px;
+}
+.x-field.x-field-labeled .x-form-label {
+  background-color: inherit;
+}
+.x-sheet-action .x-button {
+  margin-bottom: 1em;
+}
+.x-sheet-action{
+  padding: 1em;
+}
+.x-panel.x-floating{
+  box-shadow: 2px 0em 50px #000;
+}
+//For cupertino Theme End
+.dom-button{
+  text-align: -webkit-center;
+  font-size: small
+}
+
+.x-indexbar-vertical {
+  margin-right: 0;
+  padding: 25px;
+}
+.x-indexbar > div {
+  font-size: 0.8em;
+  line-height: 1.2em;
+}
+
+.x-msgbox .x-msgbox-buttons .x-toolbar-inner .x-button .x-button-label{
+  background-color: transparent;
+}
+
+//LOADING SPINNER FIX
+@keyframes x-loading-spinner-rotate {
+  0%{     transform: rotate(0deg);   }
+  8.32%{  transform: rotate(0deg);   }
+
+  8.33%{  transform: rotate(30deg);  }
+  16.65%{ transform: rotate(30deg);  }
+
+  16.66%{ transform: rotate(60deg);  }
+  24.99%{ transform: rotate(60deg);  }
+
+  25%{    transform: rotate(90deg);  }
+  33.32%{ transform: rotate(90deg);  }
+
+  33.33%{ transform: rotate(120deg); }
+  41.65%{ transform: rotate(120deg); }
+
+  41.66%{ transform: rotate(150deg); }
+  49.99%{ transform: rotate(150deg); }
+
+  50%{    transform: rotate(180deg); }
+  58.32%{ transform: rotate(180deg); }
+
+  58.33%{ transform: rotate(210deg); }
+  66.65%{ transform: rotate(210deg); }
+
+  66.66%{ transform: rotate(240deg); }
+  74.99%{ transform: rotate(240deg); }
+
+  75%{    transform: rotate(270deg); }
+  83.32%{ transform: rotate(270deg); }
+
+  83.33%{ transform: rotate(300deg); }
+  91.65%{ transform: rotate(300deg); }
+
+  91.66%{ transform: rotate(330deg); }
+  100%{   transform: rotate(330deg); }
+}

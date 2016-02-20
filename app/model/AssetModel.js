@@ -29,42 +29,52 @@ Ext.define('Rms.model.AssetModel', {
             {
                 name   : 'name',
                 convert: function (v, record) {
-                    return record.raw.items[0].items[1].displayValue;
+                    if (record.raw.items[0].items[0]) {
+                        return record.raw.items[0].items[0].displayValue;
+                    }
                 }
             },
             {
                 name   : 'lastReportTime',
                 convert: function (v, record) {
-                    return record.raw.items[0].items[4].currentValues[0];
+                    if (record.raw.items[0].items[1]) {
+                        return record.raw.items[0].items[1].currentValues[0];
+                    }
                 }
             },
             {
                 name   : 'assetStatus',
                 convert: function (v, record) {
-                    var status = record.raw.items[0].items[6].currentValues[0];
-                    return (status.split("."))[1];
-
+                    if (record.raw.items[0].items[2]) {
+                        var status = record.raw.items[0].items[2].currentValues[0];
+                        return (status.split("."))[1];
+                    }
                 }
             },
             {
                 name   : 'group',
                 convert: function (v, record) {
-                    return record.raw.items[0].items[2].displayValue;
-
+                    if (record.raw.items[0].items[2]) {
+                        return record.raw.items[0].items[2].displayValue;
+                    }
                 }
             },
             {
                 name   : 'driver',
                 convert: function (v, record) {
-                    return record.raw.items[0].items[10].currentValues[0];
+                    if (record.raw.items[0].items[10]) {
+                        return record.raw.items[0].items[10].currentValues[0];
+                    }
 
                 }
             },
             {
                 name   : 'Alarm',
                 convert: function (v, record) {
-                    var status = record.raw.items[0].items[0].currentValues[0];
-                    return (status.split("."))[1];
+                    if (record.raw.items[0].items[0]) {
+                        var status = record.raw.items[0].items[0].currentValues[0];
+                        return (status.split("."))[1];
+                    }
                 }
             }
         ]

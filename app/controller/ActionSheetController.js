@@ -1,61 +1,61 @@
 Ext.define('Rms.controller.ActionSheetController', {
-    extend: 'Ext.app.Controller',
+    extend  : 'Ext.app.Controller',
     requires: [
         'Rms.view.asset.AssetView',
         'Rms.view.asset.AssetDetails',
         'Rms.store.GeofencesStore'
     ],
-    config: {
-        refs: {
-            actionSheetButton: 'actionsheet button',
-            commandListPanelBackBtn: 'command_list toolbar #back',
-            commandListCommandButton: 'command_list button',
-            activeAlarmToolbar: 'assetview active_alarms_list toolbar',
-            activeAlarmListBackbtn: 'assetview active_alarms_list toolbar #back',
-            activeAlarmListItem: 'assetview active_alarms_list list',
-            activeAlarmDetailsBackBtn: 'assetview all_alarm_details #back',
+    config  : {
+        refs   : {
+            actionSheetButton           : 'actionsheet button',
+            commandListPanelBackBtn     : 'command_list toolbar #back',
+            commandListCommandButton    : 'command_list button',
+            activeAlarmToolbar          : 'assetview active_alarms_list toolbar',
+            activeAlarmListBackbtn      : 'assetview active_alarms_list toolbar #back',
+            activeAlarmListItem         : 'assetview active_alarms_list list',
+            activeAlarmDetailsBackBtn   : 'assetview all_alarm_details #back',
             activeAlarmDetailsOptionsBtn: 'assetview all_alarm_details button[text=Options]',
-            activeAlarmDetails: 'active_alarm_details',
-            assetDetails: 'asset_details',
-            assetView: 'assetview',
-            geofenceListPanelBackBtn: 'geofence_list toolbar #back',
-            geofenceList: 'geofence_list list',
-            geofenceDetailsBackBtn: 'geofence_details toolbar button',
-            alarmGroupList: 'alarm_list_groups',
-            launchApp: 'launchapp'
+            activeAlarmDetails          : 'active_alarm_details',
+            assetDetails                : 'asset_details',
+            assetView                   : 'assetview',
+            geofenceListPanelBackBtn    : 'geofence_list toolbar #back',
+            geofenceList                : 'geofence_list list',
+            geofenceDetailsBackBtn      : 'geofence_details toolbar button',
+            alarmGroupList              : 'alarm_list_groups',
+            launchApp                   : 'launchapp'
         },
         control: {
-            actionSheetButton: {
+            actionSheetButton           : {
                 tap: 'actionSheetButtonTapped'
             },
-            commandListPanelBackBtn: {
+            commandListPanelBackBtn     : {
                 tap: 'commandListPanelBackBtnTapped'
             },
-            activeAlarmListBackbtn: {
+            activeAlarmListBackbtn      : {
                 tap: 'commandListPanelBackBtnTapped'
             },
             activeAlarmDetailsOptionsBtn: {
                 tap: 'activeAlarmDetailsOptionsBtn'
             },
-            geofenceListPanelBackBtn: {
+            geofenceListPanelBackBtn    : {
                 tap: 'geofenceListPanelBackBtnTapped'
             },
-            geofenceList: {
+            geofenceList                : {
                 itemtap: 'showGeofenceDetails'
             },
-            geofenceDetailsBackBtn: {
+            geofenceDetailsBackBtn      : {
                 tap: 'geofenceDetailsBackBtnTapped'
             },
-            activeAlarmListItem: {
+            activeAlarmListItem         : {
                 itemtap: 'showAlarmDetails'
             },
-            activeAlarmDetailsBackBtn: {
+            activeAlarmDetailsBackBtn   : {
                 tap: 'activeAlarmDetailsBackBtnTaped'
             },
-            commandListCommandButton: {
+            commandListCommandButton    : {
                 tap: 'commandListCommandButtonTapped'
             },
-            launchApp: {
+            launchApp                   : {
                 initialize: 'createStoreInstance'
             }
         }
@@ -66,6 +66,7 @@ Ext.define('Rms.controller.ActionSheetController', {
     },
 
     actionSheetButtonTapped: function (button) {
+        console.log(button.getItemId());
         switch (button.getItemId()) {
             case 'alarm':
                 this.actionSheetAlarmBtnTapped();
@@ -93,6 +94,15 @@ Ext.define('Rms.controller.ActionSheetController', {
                 break;
             case 'nearestAssets':
                 Rms.app.getController('AssetController').showNearestAsset(button.get('data'));
+                break;
+            case 'driverMaxSpeed':
+            case 'driverLiveScore':
+            case 'driverMaxRPM':
+                Rms.app.getController('DriverController').showGaugeGraph(button.getItemId());
+                break;
+            case 'driverLiveScoreChart':
+                Rms.app.getController('DriverController').showLineGraph('driverLiveScoreChart');
+                break;
             case 'map':
                 // Do nothing. this is handled in the MapController.
                 break;
@@ -100,7 +110,7 @@ Ext.define('Rms.controller.ActionSheetController', {
     },
 
     activeAlarmDetailsBackBtnTaped: function () {
-        this.getActiveAlarmListItem().deselectAll();
+        //this.getActiveAlarmListItem().deselectAll();
         this.getAssetView().setActiveItem(2);
     },
 
@@ -114,7 +124,7 @@ Ext.define('Rms.controller.ActionSheetController', {
         this.getAssetView().setActiveItem(7);
     },
 
-    actionSheetAlarmBtnTapped: function () {
+    actionSheetAlarmBtnTapped    : function () {
         this.getAssetDetails().assetOptions.hide();
         var activeAlarms = Ext.getStore('activeAlarmsStore');
         activeAlarms.on('load', function (store) {
@@ -131,7 +141,7 @@ Ext.define('Rms.controller.ActionSheetController', {
         }, this);
         activeAlarms.load({
             params: {
-                'oid': [this.getAssetDetails().domainObjectId],
+                'oid' : [this.getAssetDetails().domainObjectId],
                 'view': 'asset,lastUpdatedTime,description,name,oid,assetID,position,heading,domainObjectType'
             }
         });
@@ -236,19 +246,21 @@ Ext.define('Rms.controller.ActionSheetController', {
         //};
 
         Ext.Ajax.request({
-            url: App.config.serviceUrl + 'mobile/possibleCommands/',
-            method: App.config.ajaxType,
-            params: {
+            url    : App.config.serviceUrl + 'mobile/possibleCommands/',
+            method : App.config.ajaxType,
+            params : {
                 'oid': [this.getAssetDetails().domainObjectId]
             },
             success: function (response) {
-                var data = Ext.decode(response.responseText);
-                var commandCodeArray = [];
+                var data              = Ext.decode(response.responseText);
+                var commandCodeArray  = [];
                 var commandValueArray = [];
                 for (var i in data) {
                     if (commandOptions.indexOf(i) > -1) {
                         commandCodeArray.push(i);
-                        var temp = data[i].replace(/([A-Z])/g, ' $1').replace(/^./, function(str){ return str.toUpperCase(); });
+                        var temp = data[i].replace(/([A-Z])/g, ' $1').replace(/^./, function (str) {
+                            return str.toUpperCase();
+                        });
                         commandValueArray.push(temp);
                     }
                 }
@@ -285,7 +297,7 @@ Ext.define('Rms.controller.ActionSheetController', {
     },
 
     geofenceDetailsBackBtnTapped: function (button) {
-        this.getGeofenceList().deselectAll();
+        //this.getGeofenceList().deselectAll();
         this.getAssetView().setActiveItem(5);
     },
 
@@ -297,22 +309,22 @@ Ext.define('Rms.controller.ActionSheetController', {
     commandListCommandButtonTapped: function (button) {
         if (button.config.itemId != 'back') {
             Ext.Ajax.request({
-                url: App.config.serviceUrl + 'caesarAssetCommand/executeCommand',
-                method: App.config.ajaxType,
-                params: {
+                url       : App.config.serviceUrl + 'caesarAssetCommand/executeCommand',
+                method    : App.config.ajaxType,
+                params    : {
                     domainObjectType: this.getAssetDetails().domainObjectType,
-                    domainObjectId: this.getAssetDetails().domainObjectId,
-                    commandId: button.config.commandCode
+                    domainObjectId  : this.getAssetDetails().domainObjectId,
+                    commandId       : button.config.commandCode
                 }, success: function (response) {
-                    var data = Ext.decode(response.responseText),
+                    var data  = Ext.decode(response.responseText),
                         title = '',
-                        msg = '';
+                        msg   = '';
 
                     if (data.success) {
                         msg = 'Command sent successfully.';
                     } else {
                         title = 'Error';
-                        msg = 'Could not execute command.';
+                        msg   = 'Could not execute command.';
                     }
                     Ext.Msg.alert(title, msg);
 
@@ -322,7 +334,7 @@ Ext.define('Rms.controller.ActionSheetController', {
                  * Usually, the status code is "400".
                  * @param response
                  */
-                failure: function (response) {
+                failure   : function (response) {
                     var msg = '';
                     if (response.status == 500) {
                         msg = 'Internal server error.';
@@ -337,12 +349,12 @@ Ext.define('Rms.controller.ActionSheetController', {
             });
         }
     },
-    executeAlarmCommand: function (decision) {
-        var me = this,
-            url = '',
+    executeAlarmCommand           : function (decision) {
+        var me            = this,
+            url           = '',
             justification = '',
-            msg = '',
-            alarmId = this.getAlarmGroupList().selectedAlarmId;
+            msg           = '',
+            alarmId       = this.getAlarmGroupList().selectedAlarmId;
 
         if (decision) {
             url = 'caesarAssetAlarm/acknowledgeMultipleAlarms';
@@ -353,10 +365,10 @@ Ext.define('Rms.controller.ActionSheetController', {
         }
 
         Ext.Ajax.request({
-            url: App.config.serviceUrl + url,
-            method: App.config.ajaxType,
-            params: {
-                alarmIds: JSON.stringify([alarmId]),
+            url    : App.config.serviceUrl + url,
+            method : App.config.ajaxType,
+            params : {
+                alarmIds     : JSON.stringify([alarmId]),
                 justification: justification
             },
             success: function (response) {
@@ -364,9 +376,12 @@ Ext.define('Rms.controller.ActionSheetController', {
 
                 if (data.success) {
                     Ext.Msg.alert('', msg);
-                    // FIXME whatever the below means...
-                    me.getLaunchApp().setActiveItem(0);
-                    me.getLaunchApp().setActiveItem(2);
+                    console.log('excuted Command');
+                    if (me.getAssetView().getActiveItem().xtype = "all_alarm_details") {
+                        me.getAssetView().setActiveItem(1);
+                    } else {
+                        me.getLaunchApp().setActiveItem(2);
+                    }
                 } else {
                     for (var i = 0; i < data.messages.length; i++) {
                         msg += data.messages[i] + '<br>';

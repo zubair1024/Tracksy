@@ -59,7 +59,7 @@ Ext.define('Rms.controller.AlarmController', {
 
             var alarmGroupListTap = this.getAlarmGroupListTap();
             if (alarmGroupListTap) {
-                this.getAlarmGroupListTap().deselectAll();
+                //this.getAlarmGroupListTap().deselectAll();
             }
 
             if (store.getCount() === 0) {
@@ -68,33 +68,32 @@ Ext.define('Rms.controller.AlarmController', {
                 this.getAlarmView().getAt(1).showAlarmList(store, true);
                 this.getAlarmView().setActiveItem(1);
             }
-
         }, this);
         activeAlarmsStore.load({
             params: {
                 alarmType: this.alarmType,
-                view: 'asset,lastUpdatedTime,description,name,oid,assetID,position,heading,domainObjectType'
+                view: 'asset,lastUpdatedTime,description,name,oid,assetID,position,heading'
             }
         });
-        this.getAlarmGroupListTap().deselectAll();
+        //this.getAlarmGroupListTap().deselectAll();
     },
     alarmTypeBackBtnTapped: function (Button) {
         this.getAlarmView().setActiveItem(0);
     },
     allAlarmGroupsButtonTapped: function (btn) {
         var me = this;
+        //Stop Map refresher if exists
+        if (Rms.app.getController('MapController').refresh) {
+            Rms.app.getController('MapController').refresh = false;
+            clearInterval(Rms.app.getController('MapController').refreshIntervalId);
+        }
         Ext.Ajax.request({
             url: App.config.serviceUrl + 'mobile/activeAlarmGroups/',
             method: App.config.ajaxType,
             success: function (response) {
                 var data = Ext.decode(response.responseText);
                 me.alarmStore = Ext.create('Rms.store.AlarmStore');
-                // TODO yeah, Rock'n'Roll.
-                var alarms = mobileConfiguration.alarms;
                 for (var i = 0; i < data.length; i++) {
-                    if ((!alarms.engineRPMAlarm && data[i].match(/Engine RPM Alarm/g)) || (!alarms.panicAlarm && data[i].match(/Panic Alarm/g))) {
-                        continue;
-                    }
                     data[i] = data[i].replace(/&#39;/g, '');
                     data[i] = data[i].replace(/-> /g, '(');
                     data[i] = data[i] + ')';
@@ -108,10 +107,12 @@ Ext.define('Rms.controller.AlarmController', {
         });
     },
     setAlarmStore: function (thisComp, newActive, oldActive, eOpts) {
-        this.allAlarmGroupsButtonTapped();
+        if(!Rms.app.getController('MapController').alarmedAsset){
+            this.allAlarmGroupsButtonTapped();
+        }
     },
     activeAlarmDetailsToolbarBtnTapped: function (button) {
-        this.getActiveAlarmListTap().deselectAll();
+        //this.getActiveAlarmListTap().deselectAll();
         if (button.config.itemId == 'back') {
             this.getAlarmView().setActiveItem(1);
         }
@@ -120,7 +121,7 @@ Ext.define('Rms.controller.AlarmController', {
         }
     },
     showActiveAlarmDetails: function (list, index, target, record, e, opts) {
-        this.getActiveAlarmListTap().deselectAll();
+        //this.getActiveAlarmListTap().deselectAll();
         this.getAlarmGroupList().selectedAlarmId = record.get('oid');
         this.getAlarmView().getAt(3).setRecords(record);
         this.getAlarmView().setActiveItem(3);

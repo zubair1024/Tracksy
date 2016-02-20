@@ -1,27 +1,34 @@
 Ext.define('Rms.view.statistics.StatisticsView', {
-    extend    : 'Ext.Panel',
-    alias     : 'widget.statistics_view',
-    requires  : [
-    ],
-    config    : {
+    extend  : 'Ext.Panel',
+    alias   : 'widget.statistics_view',
+    requires: [],
+    config  : {
         store             : null,
         assetsInGroupStore: null,
         layout            : {
-            type: 'card' ,
+            type     : 'card',
             animation: {type: 'fade', direction: 'left'}
         },
-        items:[
+        items             : [
             {
-                xtype: 'statistics_list'
+                xtype: 'statistics_list',
+                id   : 'stats_list'
             },
             {
-                xtype: 'statistics_bar'
+                xtype: 'statistics_bar',
+                id   : 'barView'
             },
             {
-                xtype: 'statistics_line'
+                xtype: 'statistics_line',
+                id   : 'lineView'
             },
             {
-                xtype: 'statistics_pie'
+                xtype: 'statistics_pie',
+                id   : 'pieView'
+            },
+            {
+                xtype: 'statistics_gauge',
+                id   : 'gaugeView'
             }
         ]
     }

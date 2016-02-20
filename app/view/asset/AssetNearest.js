@@ -1,38 +1,38 @@
 Ext.define('Rms.view.asset.AssetNearest', {
-    extend: 'Ext.Panel',
-    alias: 'widget.asset_nearest_list',
-    requires: [
+    extend    : 'Ext.Panel',
+    alias     : 'widget.asset_nearest_list',
+    requires  : [
         'Rms.model.AssetModel',
         'Ext.plugin.ListPaging',
         'Ext.dataview.List',
         'Ext.field.Search'
     ],
-    config: {
+    config    : {
         layout: 'fit',
-        store: null,
-        items: {
-            xtype: 'toolbar',
+        store : null,
+        items : {
+            xtype : 'toolbar',
             docked: 'top',
-            items: [
+            items : [
                 {
                     xtype: 'button',
-                    id: 'nearest_AssetBckBtn',
-                    text: 'back',
-                    ui: 'back'
+                    id   : 'nearest_AssetBckBtn',
+                    text : 'back',
+                    ui   : 'back'
                 },
                 {
                     xtype: 'spacer'
                 },
                 {
                     //Segmented Button for Sorting
-                    xtype: 'segmentedbutton',
-                    pack: 'center',
-                    id:'nearestGrouper',
+                    xtype        : 'segmentedbutton',
+                    pack         : 'center',
+                    id           : 'nearestGrouper',
                     allowMultiple: false,
-                    margin: '0 10 0 10',
-                    items: [
+                    margin       : '0 10 0 10',
+                    items        : [
                         {
-                            text: 'None',
+                            text   : 'None',
                             pressed: true,
                             handler: function () {
                                 var list = Ext.getCmp('nearestAssetList');
@@ -42,14 +42,14 @@ Ext.define('Rms.view.asset.AssetNearest', {
                                     }
                                 });
                                 list.setGrouped(false);
-                               // list.setIndexBar(false);
+                                list.setIndexBar(false);
                                 list.refresh();
                             }
                         },
                         {
-                            text: 'Group',
+                            text   : 'Group',
                             handler: function () {
-                                var list = Ext.getCmp('nearestAssetList');
+                                var list  = Ext.getCmp('nearestAssetList');
                                 var store = Ext.getStore('assetPositionsStore');
                                 //Resetting the grouper
                                 list.getStore().setGrouper({
@@ -65,29 +65,25 @@ Ext.define('Rms.view.asset.AssetNearest', {
                                     }
                                 });
                                 list.setGrouped(true);
-                                // list.setIndexBar(true);
-                                //list.setIndexBar( {
-                                //            letters: ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'].sort()
-                                //        });
-
+                                list.setIndexBar(true);
                             }
                         }
                     ]
                 },
                 {
-                    xtype: 'segmentedbutton',
-                    pack: 'center',
+                    xtype        : 'segmentedbutton',
+                    pack         : 'center',
                     allowMultiple: false,
-                    id: 'distance',
-                    items: [
+                    id           : 'distance',
+                    items        : [
                         {
-                            text: '&#x25B2;',
+                            text   : '&#x25B2;',
                             pressed: true,
                             handler: function () {
-                                var sorters3 = [{
-                                    property: 'distance',
+                                var sorters3            = [{
+                                    property : 'distance',
                                     direction: 'DESC',
-                                    sorterFn: function (o1, o2) {
+                                    sorterFn : function (o1, o2) {
                                         var v1 = Number(o1.data.distance);
                                         var v2 = Number(o2.data.distance);
                                         return v1 > v2 ? -1 : (v1 < v2 ? 1 : 0);
@@ -101,12 +97,12 @@ Ext.define('Rms.view.asset.AssetNearest', {
                             }
                         },
                         {
-                            text: '&#x25BC;',
+                            text   : '&#x25BC;',
                             handler: function () {
-                                var sorters4 = [{
-                                    property: 'distance',
+                                var sorters4            = [{
+                                    property : 'distance',
                                     direction: 'ASC',
-                                    sorterFn: function (o1, o2) {
+                                    sorterFn : function (o1, o2) {
                                         var v1 = Number(o1.data.distance);
                                         var v2 = Number(o2.data.distance);
                                         return v1 < v2 ? 1 : (v1 > v2 ? -1 : 0);
@@ -126,14 +122,18 @@ Ext.define('Rms.view.asset.AssetNearest', {
         }
     },
     updateData: function (data) {
+        if(!this.count){
+            this.count = 0;
+        }
+        this.count++;
         (Ext.getCmp('nearestGrouper')).setPressedButtons([0]);
         Ext.Viewport.setMasked({
-            xtype: 'loadmask',
+            xtype  : 'loadmask',
             message: 'Calculating the distance...'
         });
         var distanceSegmentedButton = Ext.getCmp('distance');
         distanceSegmentedButton.setPressedButtons([0]);
-        var totalToolbar = Ext.getCmp('nearAssetsTotal');
+        var totalToolbar            = Ext.getCmp('nearAssetsTotal');
         if (totalToolbar) {
             totalToolbar.destroy();
         }
@@ -142,62 +142,54 @@ Ext.define('Rms.view.asset.AssetNearest', {
             var assetPositionsStore = Ext.getStore('assetPositionsStore');
             assetPositionsStore.on('load', function (store) {
                 store.each(function (item) {
-                    var myLatitude = data ? parseFloat((data[0].split(','))[0]) : App.currentPosition.latitude;
-                    var myLongitude = data ? parseFloat((data[0].split(','))[1]) : App.currentPosition.longitude;
-                    var assetLatitude = item.get('latitude');
+                    var myLatitude     = data ? parseFloat((data[0].split(','))[0]) : App.currentPosition.latitude;
+                    var myLongitude    = data ? parseFloat((data[0].split(','))[1]) : App.currentPosition.longitude;
+                    var assetLatitude  = item.get('latitude');
                     var assetLongitude = item.get('longitude');
                     //Using HARVESIAN formula to calculate the distance
                     var R = 6371; // use 3959 for miles or 6371 for km
-                    var latitudeDifference = (assetLatitude - myLatitude) * Math.PI / 180;
+                    var latitudeDifference  = (assetLatitude - myLatitude) * Math.PI / 180;
                     var longitudeDifference = (assetLongitude - myLongitude) * Math.PI / 180;
-                    myLatitude = myLatitude * Math.PI / 180;
-                    assetLatitude = assetLatitude * Math.PI / 180;
-                    var a = Math.sin(latitudeDifference / 2) * Math.sin(latitudeDifference / 2) + Math.sin(longitudeDifference / 2) * Math.sin(longitudeDifference / 2) * Math.cos(myLatitude) * Math.cos(assetLatitude);
-                    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                    var distance = R * c;
-                    item.data.distance = distance.toFixed(2);
+                    myLatitude              = myLatitude * Math.PI / 180;
+                    assetLatitude           = assetLatitude * Math.PI / 180;
+                    var a                   = Math.sin(latitudeDifference / 2) * Math.sin(latitudeDifference / 2) + Math.sin(longitudeDifference / 2) * Math.sin(longitudeDifference / 2) * Math.cos(myLatitude) * Math.cos(assetLatitude);
+                    var c                   = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                    var distance            = R * c;
+                    item.data.distance      = distance.toFixed(2);
+                    item.data.assetGroup    = item.raw.assetGroupName;
                 });
                 var sorters3 = [{
-                    property: 'distance',
+                    property : 'distance',
                     direction: 'DESC',
-                    sorterFn: function (o1, o2) {
+                    sorterFn : function (o1, o2) {
                         var v1 = Number(o1.data.distance);
                         var v2 = Number(o2.data.distance);
                         return v1 > v2 ? -1 : (v1 < v2 ? 1 : 0);
                     }
                 }];
-                me.getAt(2).setTitle('<div style="font-size: 0.7em">' + store.getCount() + ' Assets</div>');
-                //me.getAt(2).removeAll();
-                //me.getAt(2).add([
-                //    {
-                //        xtype: 'spacer'
-                //    },
-                //    {
-                //        xtype: 'title',
-                //        title: '<div style="font-size: 0.7em">'+(Ext.getStore('assetStore')).getCount()+' Assets</div>'
-                //    }
-                //]);
+                Ext.getCmp('nearAssetsTotal').setTitle('<div style="font-size: 0.7em">' + store.getCount() + ' Assets</div>');
                 assetPositionsStore.sort(sorters3);
+                Ext.Viewport.setMasked(false);
             }, this);
             assetPositionsStore.load({
                 params: {
-                    ids: 'all',
+                    ids        : 'all',
                     historySpec: 'ALL',
-                    view: 'assetID,longitude,latitude,eventTime,assetName,assetGroupName'
+                    view       : 'assetID,longitude,latitude,eventTime,assetName,assetGroupName'
                 }
             });
             me.setItems(
                 [{
-                    xtype: 'list',
-                    store: 'assetPositionsStore',
-                    id: 'nearestAssetList',
-                    emptyText: 'No Assets...',
-                    infinite: true,
+                    xtype           : 'list',
+                    store           : 'assetPositionsStore',
+                    id              : 'nearestAssetList',
+                    emptyText       : 'No Assets...',
+                    infinite        : true,
                     onItemDisclosure: true,
-                    variableHeights: true,
+                    variableHeights : true,
                     //scrollToTopOnRefresh: false,
-                    itemTpl: Ext.create('Ext.XTemplate',
-                        '<span><b>{assetName}</b><br><span>{[this.formatDateTime(values.eventTime)]}</span> | <b>{distance} KM</b></span>', {
+                    itemTpl         : Ext.create('Ext.XTemplate',
+                        '<span><b>{assetName}</b><br><span>{[this.formatDateTime(values.eventTime)]}</span> | <b>{distance} KM</b><br>{assetGroup}</span>', {
                             formatDateTime: function (isodate) {
                                 // FIXME Backend needs to return a ISO dateformat =(
                                 var isoArray = isodate.split(" ");
@@ -214,20 +206,20 @@ Ext.define('Rms.view.asset.AssetNearest', {
                                 var year = isoArray[2];
                                 //Time
                                 var time = isoArray[3].slice(0, 8);
-                                time = time.replace(".", "");
+                                time     = time.replace(".", "");
                                 //The date formatted in the ISO standard
-                                var isoDate = year + "-" + (month + 1) + "-" + day + "T" + time;
+                                var isoDate  = year + "-" + (month + 1) + "-" + day + "T" + time;
                                 var tempDate = isoDate.replace('T', ' ');
-                                var date = tempDate.replace(/-/g, '/');
-                                date = new Date(Date.parse(date));
+                                var date     = tempDate.replace(/-/g, '/');
+                                date         = new Date(Date.parse(date));
                                 date.setMinutes(date.getMinutes() + App.config.user.timeZoneOffset);
                                 return Ext.Date.format(date, App.config.user.dateTimeFormat);
                             }
                         }
                     )
                 }, {
-                    xtype: 'toolbar',
-                    id: 'nearAssetsTotal',
+                    xtype : 'toolbar',
+                    id    : 'nearAssetsTotal',
                     docked: 'bottom'
                 }]);
             //assetPositionsStore.setGrouper({
@@ -235,46 +227,50 @@ Ext.define('Rms.view.asset.AssetNearest', {
             //        return record.raw.assetGroupName.toUpperCase();
             //    }
             //});
-            Ext.Viewport.setMasked(false);
         }
         else {
             if (navigator.geolocation) {
+                Ext.Viewport.setMasked({
+                    xtype  : 'loadmask',
+                    message: 'Calculating the distance...'
+                });
                 var geo = Ext.create('Ext.util.Geolocation', {
                     autoUpdate: false,
-                    listeners: {
+                    listeners : {
                         locationupdate: function (geo) {
                             var assetPositionsStore = Ext.getStore('assetPositionsStore');
                             assetPositionsStore.on('load', function (store) {
                                 store.each(function (item) {
-                                    var myLatitude = geo.getLatitude();
-                                    var myLongitude = geo.getLongitude();
-                                    var assetLatitude = item.get('latitude');
-                                    var assetLongitude = item.get('longitude');
+                                    var myLatitude      = geo.getLatitude();
+                                    var myLongitude     = geo.getLongitude();
+                                    var assetLatitude   = item.get('latitude');
+                                    var assetLongitude  = item.get('longitude');
                                     App.currentPosition = {
-                                        latitude: geo.getLatitude(),
+                                        latitude : geo.getLatitude(),
                                         longitude: geo.getLongitude()
                                     };
                                     //Using HARVESIAN formula to calculate the distance
                                     var R = 6371; // use 3959 for miles or 6371 for km
-                                    var latitudeDifference = (assetLatitude - myLatitude) * Math.PI / 180;
+                                    var latitudeDifference  = (assetLatitude - myLatitude) * Math.PI / 180;
                                     var longitudeDifference = (assetLongitude - myLongitude) * Math.PI / 180;
-                                    myLatitude = myLatitude * Math.PI / 180;
-                                    assetLatitude = assetLatitude * Math.PI / 180;
-                                    var a = Math.sin(latitudeDifference / 2) * Math.sin(latitudeDifference / 2) + Math.sin(longitudeDifference / 2) * Math.sin(longitudeDifference / 2) * Math.cos(myLatitude) * Math.cos(assetLatitude);
-                                    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                                    var distance = R * c;
-                                    item.data.distance = distance.toFixed(2);
+                                    myLatitude              = myLatitude * Math.PI / 180;
+                                    assetLatitude           = assetLatitude * Math.PI / 180;
+                                    var a                   = Math.sin(latitudeDifference / 2) * Math.sin(latitudeDifference / 2) + Math.sin(longitudeDifference / 2) * Math.sin(longitudeDifference / 2) * Math.cos(myLatitude) * Math.cos(assetLatitude);
+                                    var c                   = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                                    var distance            = R * c;
+                                    item.data.distance      = distance.toFixed(2);
+                                    item.data.assetGroup    = item.raw.assetGroupName;
                                 });
                                 var sorters3 = [{
-                                    property: 'distance',
+                                    property : 'distance',
                                     direction: 'DESC',
-                                    sorterFn: function (o1, o2) {
+                                    sorterFn : function (o1, o2) {
                                         var v1 = Number(o1.data.distance);
                                         var v2 = Number(o2.data.distance);
                                         return v1 > v2 ? -1 : (v1 < v2 ? 1 : 0);
                                     }
                                 }];
-                                me.getAt(2).setTitle('<div style="font-size: 0.7em">' + store.getCount() + ' Assets</div>');
+                                Ext.getCmp('nearAssetsTotal').setTitle('<div style="font-size: 0.7em">' + store.getCount() + ' Assets</div>');
                                 //me.getAt(2).removeAll();
                                 //me.getAt(2).add([
                                 //    {
@@ -286,26 +282,27 @@ Ext.define('Rms.view.asset.AssetNearest', {
                                 //    }
                                 //]);
                                 assetPositionsStore.sort(sorters3);
+                                Ext.Viewport.setMasked(false);
                             }, this);
                             assetPositionsStore.load({
                                 params: {
-                                    ids: 'all',
+                                    ids        : 'all',
                                     historySpec: 'CURRENT',
-                                    view: 'assetID,longitude,latitude,eventTime,assetName,assetGroupName'
+                                    view       : 'assetID,longitude,latitude,eventTime,assetName,assetGroupName'
                                 }
                             });
                             me.setItems(
                                 [{
-                                    xtype: 'list',
-                                    store: 'assetPositionsStore',
-                                    emptyText: 'No Assets...',
-                                    id: 'nearestAssetList',
-                                    infinite: true,
+                                    xtype           : 'list',
+                                    store           : 'assetPositionsStore',
+                                    emptyText       : 'No Assets...',
+                                    id              : 'nearestAssetList',
+                                    infinite        : true,
                                     onItemDisclosure: true,
-                                    variableHeights: true,
+                                    variableHeights : true,
                                     //scrollToTopOnRefresh: false,
-                                    itemTpl: Ext.create('Ext.XTemplate',
-                                        '<span><b>{assetName}</b><br><span>{[this.formatDateTime(values.eventTime)]}</span> | <b>{distance} KM</b></span>', {
+                                    itemTpl         : Ext.create('Ext.XTemplate',
+                                        '<span><b>{assetName}</b><br><span>{[this.formatDateTime(values.eventTime)]}</span> | <b>{distance} KM</b><br>{assetGroup}</span>', {
                                             formatDateTime: function (isodate) {
                                                 // FIXME Backend needs to return a ISO dateformat =(
                                                 var isoArray = isodate.split(" ");
@@ -322,29 +319,28 @@ Ext.define('Rms.view.asset.AssetNearest', {
                                                 var year = isoArray[2];
                                                 //Time
                                                 var time = isoArray[3].slice(0, 8);
-                                                time = time.replace(".", "");
+                                                time     = time.replace(".", "");
                                                 //The date formatted in the ISO standard
-                                                var isoDate = year + "-" + (month + 1) + "-" + day + "T" + time;
+                                                var isoDate  = year + "-" + (month + 1) + "-" + day + "T" + time;
                                                 var tempDate = isoDate.replace('T', ' ');
-                                                var date = tempDate.replace(/-/g, '/');
-                                                date = new Date(Date.parse(date));
+                                                var date     = tempDate.replace(/-/g, '/');
+                                                date         = new Date(Date.parse(date));
                                                 date.setMinutes(date.getMinutes() + App.config.user.timeZoneOffset);
                                                 return Ext.Date.format(date, App.config.user.dateTimeFormat);
                                             }
                                         }
                                     )
                                 }, {
-                                    xtype: 'toolbar',
-                                    id: 'nearAssetsTotal',
+                                    xtype : 'toolbar',
+                                    id    : 'nearAssetsTotal',
                                     docked: 'bottom'
                                 }]);
-                            Ext.Viewport.setMasked(false);
                         },
-                        locationerror: function (geo,
-                                                 bTimeout,
-                                                 bPermissionDenied,
-                                                 bLocationUnavailable,
-                                                 message) {
+                        locationerror : function (geo,
+                                                  bTimeout,
+                                                  bPermissionDenied,
+                                                  bLocationUnavailable,
+                                                  message) {
                             Ext.Viewport.setMasked(false);
                             if (bTimeout) {
                                 Ext.Msg.alert('Aw, Snap!', 'Timeout occurred');
@@ -358,17 +354,30 @@ Ext.define('Rms.view.asset.AssetNearest', {
             }
 
         }
-        var nearestAssetList = Ext.getCmp('nearestAssetList');
-        nearestAssetList.getStore().setGrouper({
-            groupFn: function () {
-                return '';
-            }
-        });
-        nearestAssetList.setGrouped(false);
-        var sorters3 = [{
-            property: 'distance',
+        //if(!Ext.getCmp('infoToolbar')){
+        //    me.setItems([
+        //        {
+        //            xtype    : 'toolbar',
+        //            id: 'infoToolbar',
+        //            docked   : 'top',
+        //            minHeight: '1.7em',
+        //            title    : '<div style="font-size: 0.5em">Based On Distance</div>'
+        //        }
+        //    ]);
+        //}
+        var nearestAssetList    = Ext.getCmp('nearestAssetList');
+        if(nearestAssetList){
+            nearestAssetList.getStore().setGrouper({
+                groupFn: function () {
+                    return '';
+                }
+            });
+            nearestAssetList.setGrouped(false);
+        }
+        var sorters3            = [{
+            property : 'distance',
             direction: 'DESC',
-            sorterFn: function (o1, o2) {
+            sorterFn : function (o1, o2) {
                 var v1 = Number(o1.data.distance);
                 var v2 = Number(o2.data.distance);
                 return v1 > v2 ? -1 : (v1 < v2 ? 1 : 0);

@@ -67,7 +67,18 @@ Ext.define('Rms.view.alarm.AllAlarmDetailsPanel', {
         container.style.height = '3em';
         container.innerText = record.get('position');
         container.onclick = function () {
-            Rms.app.getController('MapController').showSingleAlarmAssetOnMap(record,lastUpdatedTime,record.raw.domainObjectType);
+            Ext.Ajax.request({
+                async: false,
+                url: App.config.serviceUrl + 'mobile/AssetType/',
+                method: App.config.ajaxType,
+                params: {
+                    domainObjectId:  record.get('assetID')
+                },
+                success: function (response) {
+                    var data = JSON.parse(response.responseText);
+                    Rms.app.getController('MapController').showSingleAlarmAssetOnMap(record,lastUpdatedTime,(data.domainObjectType).replace(/\s+/g, ''));
+                }
+            });
         };
         this.setItems({
             xtype: 'fieldset',

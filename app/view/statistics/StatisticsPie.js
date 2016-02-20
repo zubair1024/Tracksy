@@ -35,6 +35,10 @@ Ext.define('Rms.view.statistics.StatisticsPie', {
     },
     updateData: function (record, domainObjectId) {
         var me = this;
+        Ext.Viewport.setMasked({
+            xtype: 'loadmask',
+            message: 'Loading statistical data...'
+        });
         var complete = [];
         var oneColumn = true;
         var data;
@@ -73,7 +77,12 @@ Ext.define('Rms.view.statistics.StatisticsPie', {
                 {
                     'name': 'Not Operational (' + notOperational + ')',
                     'data1': notOperational
-                }]
+                },
+                {
+                    'name': 'Not Moving (' + notMoving + ')',
+                    'data1': notMoving
+                }
+            ]
 
         } else {
             Ext.Ajax.request({
@@ -243,5 +252,6 @@ Ext.define('Rms.view.statistics.StatisticsPie', {
             }
 
         }
+        Ext.Viewport.setMasked(false);
     }
 });

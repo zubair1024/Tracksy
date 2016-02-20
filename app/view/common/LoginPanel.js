@@ -43,6 +43,13 @@ Ext.define('Rms.view.common.LoginPanel', {
                         clearIcon: false,
                         labelWidth: '30%',
                         labelWrap: true
+                    },
+                    {
+                        xtype: 'togglefield',
+                        name: 'savePassword',
+                        label: 'Save Password',
+                        labelWidth: '60%',
+                        labelAlign:'center'
                     }
                 ]
             }, {
@@ -51,8 +58,8 @@ Ext.define('Rms.view.common.LoginPanel', {
                 margin: '40 10 0 10',
 //                width : '45%',
                 text  : 'Login',
-                id    : 'btnLogin'
-//                ui: 'confirm'
+                id    : 'btnLogin',
+               ui: 'confirm'
             }
         ]
     }

@@ -775,6 +775,8 @@ Ext.ClassManager.addNameAlternateMappings({
   "Rms.controller.ActionSheetController": [],
   "Rms.controller.AlarmController": [],
   "Rms.controller.AssetController": [],
+  "Rms.controller.CommonController": [],
+  "Rms.controller.DriverController": [],
   "Rms.controller.MapController": [],
   "Rms.controller.SessionController": [],
   "Rms.model.ActiveAlarmsModel": [],
@@ -783,6 +785,7 @@ Ext.ClassManager.addNameAlternateMappings({
   "Rms.model.AssetGroupModel": [],
   "Rms.model.AssetModel": [],
   "Rms.model.AssetPositionsModel": [],
+  "Rms.model.DriverModel": [],
   "Rms.model.GeofencesModel": [],
   "Rms.model.LocalStorageModel": [],
   "Rms.model.VisibleLocationsModel": [],
@@ -793,8 +796,11 @@ Ext.ClassManager.addNameAlternateMappings({
   "Rms.store.AssetPositionsStore": [],
   "Rms.store.AssetStore": [],
   "Rms.store.AssetsInGroupStore": [],
+  "Rms.store.DriverStore": [],
   "Rms.store.GeofencesStore": [],
   "Rms.store.VisibleLocationsStore": [],
+  "Rms.util.PaintMonitor": [],
+  "Rms.util.SizeMonitor": [],
   "Rms.view.LaunchApp": [],
   "Rms.view.Main": [],
   "Rms.view.alarm.ActiveAlarmDetailsPanel": [],
@@ -815,6 +821,9 @@ Ext.ClassManager.addNameAlternateMappings({
   "Rms.view.common.IntegrateApp": [],
   "Rms.view.common.LoginPanel": [],
   "Rms.view.common.UserProfile": [],
+  "Rms.view.driver.DriverDetails": [],
+  "Rms.view.driver.DriverListPanel": [],
+  "Rms.view.driver.DriverView": [],
   "Rms.view.map.AssetMapPanel": [],
   "Rms.view.map.MapControl": [],
   "Rms.view.map.MapControlGeofenceList": [],
@@ -822,6 +831,7 @@ Ext.ClassManager.addNameAlternateMappings({
   "Rms.view.map.MapView": [],
   "Rms.view.map.NearbyAssets": [],
   "Rms.view.statistics.StatisticsBar": [],
+  "Rms.view.statistics.StatisticsGauge": [],
   "Rms.view.statistics.StatisticsLine": [],
   "Rms.view.statistics.StatisticsList": [],
   "Rms.view.statistics.StatisticsPie": [],
@@ -1778,6 +1788,8 @@ Ext.ClassManager.addNameAliasMappings({
   "Rms.controller.ActionSheetController": [],
   "Rms.controller.AlarmController": [],
   "Rms.controller.AssetController": [],
+  "Rms.controller.CommonController": [],
+  "Rms.controller.DriverController": [],
   "Rms.controller.MapController": [],
   "Rms.controller.SessionController": [],
   "Rms.model.ActiveAlarmsModel": [],
@@ -1786,6 +1798,7 @@ Ext.ClassManager.addNameAliasMappings({
   "Rms.model.AssetGroupModel": [],
   "Rms.model.AssetModel": [],
   "Rms.model.AssetPositionsModel": [],
+  "Rms.model.DriverModel": [],
   "Rms.model.GeofencesModel": [],
   "Rms.model.LocalStorageModel": [],
   "Rms.model.VisibleLocationsModel": [],
@@ -1796,8 +1809,11 @@ Ext.ClassManager.addNameAliasMappings({
   "Rms.store.AssetPositionsStore": [],
   "Rms.store.AssetStore": [],
   "Rms.store.AssetsInGroupStore": [],
+  "Rms.store.DriverStore": [],
   "Rms.store.GeofencesStore": [],
   "Rms.store.VisibleLocationsStore": [],
+  "Rms.util.PaintMonitor": [],
+  "Rms.util.SizeMonitor": [],
   "Rms.view.LaunchApp": [
     "widget.launchapp"
   ],
@@ -1858,6 +1874,15 @@ Ext.ClassManager.addNameAliasMappings({
   "Rms.view.common.UserProfile": [
     "widget.user_profile"
   ],
+  "Rms.view.driver.DriverDetails": [
+    "widget.driver_details"
+  ],
+  "Rms.view.driver.DriverListPanel": [
+    "widget.driver_list"
+  ],
+  "Rms.view.driver.DriverView": [
+    "widget.driverview"
+  ],
   "Rms.view.map.AssetMapPanel": [
     "widget.asset_map_panel"
   ],
@@ -1878,6 +1903,9 @@ Ext.ClassManager.addNameAliasMappings({
   ],
   "Rms.view.statistics.StatisticsBar": [
     "widget.statistics_bar"
+  ],
+  "Rms.view.statistics.StatisticsGauge": [
+    "widget.statistics_gauge"
   ],
   "Rms.view.statistics.StatisticsLine": [
     "widget.statistics_line"
